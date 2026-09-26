@@ -1,0 +1,57 @@
+# 출시 점검표 (SSC-19)
+
+샘플 데이터 기준 개발 검증은 끝났다. 아래 **[계정]** 항목은 실제 계정·키를 연결한 뒤 확인하며, 확인 전까지 미완료로 둔다.
+
+## 1. 환경 연결
+
+| 값                                                                                                 | 위치                 | 용도                                                                |
+| -------------------------------------------------------------------------------------------------- | -------------------- | ------------------------------------------------------------------- |
+| `DATABASE_URL`                                                                                     | `.env` (배포)        | Supabase 운영 프로젝트 · Hyperdrive origin · `db:migrate`/`db:seed` |
+| `ALCHEMY_PASSWORD`, `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`                                | `.env`               | `pnpm deploy`                                                       |
+| `DATA_GO_KR_KEY`                                                                                   | `.env` / `.dev.vars` | K-apt 동기화 cron                                                   |
+| `ADMIN_TOKEN`                                                                                      | `.env` / `.dev.vars` | 정정 요청 검토 API                                                  |
+| `GOOGLE_CLIENT_ID/SECRET/REFRESH_TOKEN`, `GA4_PROPERTY_ID`, `ADSENSE_ACCOUNT_ID`                   | `.env`               | 일간 리포트 지표                                                    |
+| `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`                                                           | `.env`               | 일간 리포트·정정 요청 알림                                          |
+| `VITE_SITE_URL`, `VITE_GTM_ID`, `VITE_ADSENSE_CLIENT`, `VITE_ADSENSE_SLOT_*`, `VITE_CONTACT_EMAIL` | 빌드 환경변수        | canonical·OG, 분석, 광고, 문의처                                    |
+
+배포 순서: `DATABASE_URL=… pnpm db:migrate` → `pnpm db:seed` (샘플 아님) → `pnpm deploy`.
+
+## 2. 데이터
+
+- [x] 국토부 2026-h1 표 1~20위·건수 원문 대조 (`packages/db/src/snapshot.test.ts`)
+- [ ] [계정] K-apt 실수집 후 표본 단지 10곳의 주소·시공사 원문·사용승인일을 K-apt 사이트와 대조
+- [ ] [계정] 20개사 관련 시공사 원문 표기 분포를 뽑아 별칭 검토 (`builder-aliases.json`)
+- [ ] [계정] 대표 주소·오타·동명 단지 검색 점검 (서울·부산·경기 각 3곳)
+- [ ] 7차('26 하반기) 발표 여부 확인 — 하자심사·분쟁조정위원회 누리집 게시로 바뀜
+
+## 3. 화면 (샘플 데이터로 확인 완료)
+
+- [x] 320·390·768·1440px 11개 화면 가로 넘침 없음 (`node scripts/responsive-check.mjs`)
+- [x] 결과 4상태(명단 포함·명단 밖·매칭 확인 필요·시공사 없음)와 데이터 지연 표시
+- [x] 키보드만으로 검색 → 후보 선택 → 결과 이동, dataLayer에 검색어 없음
+- [ ] [계정] 실제 모바일 브라우저(iOS Safari, Android Chrome)에서 검색·공유 확인
+
+## 4. 광고·분석·알림
+
+- [ ] [계정] AdSense 사이트 승인 → 랜딩·결과 광고 노출, 결과 경로(`/complex/*`) Offerwall 설정
+- [ ] [계정] 광고 차단 브라우저에서 결과가 그대로 보이는지
+- [ ] [계정] AdSense "개인정보 보호 및 메시지"에서 EEA·영국·스위스 동의 메시지 게시 (개인정보처리방침 문구와 일치)
+- [ ] [계정] GTM 미리보기·GA4 DebugView에서 `docs/analytics-and-campaigns.md` 이벤트와 UTM 캠페인 확인
+- [ ] [계정] 전일 리포트 수치를 GA4·AdSense 화면과 대조, 한쪽 권한을 빼고 "수집 실패" 표시 확인
+- [ ] [계정] 10:00·10:30 cron이 같은 날 한 번만 발송하는지 (`daily_reports`)
+- [ ] [계정] 카카오톡·페이스북·X 링크 미리보기 (OG 이미지·제목)
+
+## 5. 운영 절차
+
+- **정정 요청 처리**: Telegram 알림 → `POST /rpc/correction/review` (`Authorization: Bearer $ADMIN_TOKEN`, `{"json":{"id":"…","status":"applied","resolution":"…"}}`) → 데이터 수정은 JSON 변경 PR 후 `pnpm db:seed`.
+- **새 국토부 발표**: `packages/db/data/announcements/{yyyy}-h{n}.json` 추가 → 테스트 통과 → PR 검수 → `pnpm db:seed`.
+- **동기화 장애**: `sync_runs.error`, `complexes.basis_error` 확인. 실패해도 기존 단지 데이터는 유지된다.
+- **리포트 미발송**: `daily_reports.status`(failed·not_configured)와 Worker 로그 확인.
+
+## 6. 기록
+
+| 항목        | 값                                                                                                                                                             |
+| ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 배포 URL    | (배포 후 기록)                                                                                                                                                 |
+| 검증일      | (배포 후 기록)                                                                                                                                                 |
+| 알려진 한계 | 순위는 상위 20개사만, 회사 단위 수치 · 공동시공·유사 표기는 순위 미표시 · K-apt 미등록 단지는 검색 불가 · 개발계정 일 5,000건 한도로 전체 단지 재수집에 약 6일 |

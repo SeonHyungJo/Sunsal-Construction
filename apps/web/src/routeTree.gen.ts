@@ -8,52 +8,203 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
+import { Route as rootRouteImport } from "./routes/__root";
+import { Route as IndexRouteImport } from "./routes/index";
+import { Route as ChecklistRouteImport } from "./routes/checklist";
+import { Route as CorrectionsRouteImport } from "./routes/corrections";
+import { Route as MethodologyRouteImport } from "./routes/methodology";
+import { Route as PrivacyRouteImport } from "./routes/privacy";
+import { Route as RankingRouteImport } from "./routes/ranking";
+import { Route as SearchRouteImport } from "./routes/search";
+import { Route as ComplexKaptCodeRouteImport } from "./routes/complex.$kaptCode";
 
 const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+  id: "/",
+  path: "/",
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
+const ChecklistRoute = ChecklistRouteImport.update({
+  id: "/checklist",
+  path: "/checklist",
+  getParentRoute: () => rootRouteImport,
+} as any);
+const CorrectionsRoute = CorrectionsRouteImport.update({
+  id: "/corrections",
+  path: "/corrections",
+  getParentRoute: () => rootRouteImport,
+} as any);
+const MethodologyRoute = MethodologyRouteImport.update({
+  id: "/methodology",
+  path: "/methodology",
+  getParentRoute: () => rootRouteImport,
+} as any);
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: "/privacy",
+  path: "/privacy",
+  getParentRoute: () => rootRouteImport,
+} as any);
+const RankingRoute = RankingRouteImport.update({
+  id: "/ranking",
+  path: "/ranking",
+  getParentRoute: () => rootRouteImport,
+} as any);
+const SearchRoute = SearchRouteImport.update({
+  id: "/search",
+  path: "/search",
+  getParentRoute: () => rootRouteImport,
+} as any);
+const ComplexKaptCodeRoute = ComplexKaptCodeRouteImport.update({
+  id: "/complex/$kaptCode",
+  path: "/complex/$kaptCode",
+  getParentRoute: () => rootRouteImport,
+} as any);
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
+  "/": typeof IndexRoute;
+  "/checklist": typeof ChecklistRoute;
+  "/corrections": typeof CorrectionsRoute;
+  "/methodology": typeof MethodologyRoute;
+  "/privacy": typeof PrivacyRoute;
+  "/ranking": typeof RankingRoute;
+  "/search": typeof SearchRoute;
+  "/complex/$kaptCode": typeof ComplexKaptCodeRoute;
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
+  "/": typeof IndexRoute;
+  "/checklist": typeof ChecklistRoute;
+  "/corrections": typeof CorrectionsRoute;
+  "/methodology": typeof MethodologyRoute;
+  "/privacy": typeof PrivacyRoute;
+  "/ranking": typeof RankingRoute;
+  "/search": typeof SearchRoute;
+  "/complex/$kaptCode": typeof ComplexKaptCodeRoute;
 }
 export interface FileRoutesById {
-  __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
+  __root__: typeof rootRouteImport;
+  "/": typeof IndexRoute;
+  "/checklist": typeof ChecklistRoute;
+  "/corrections": typeof CorrectionsRoute;
+  "/methodology": typeof MethodologyRoute;
+  "/privacy": typeof PrivacyRoute;
+  "/ranking": typeof RankingRoute;
+  "/search": typeof SearchRoute;
+  "/complex/$kaptCode": typeof ComplexKaptCodeRoute;
 }
 export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
-  fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
-  fileRoutesById: FileRoutesById
+  fileRoutesByFullPath: FileRoutesByFullPath;
+  fullPaths:
+    | "/"
+    | "/checklist"
+    | "/corrections"
+    | "/methodology"
+    | "/privacy"
+    | "/ranking"
+    | "/search"
+    | "/complex/$kaptCode";
+  fileRoutesByTo: FileRoutesByTo;
+  to:
+    | "/"
+    | "/checklist"
+    | "/corrections"
+    | "/methodology"
+    | "/privacy"
+    | "/ranking"
+    | "/search"
+    | "/complex/$kaptCode";
+  id:
+    | "__root__"
+    | "/"
+    | "/checklist"
+    | "/corrections"
+    | "/methodology"
+    | "/privacy"
+    | "/ranking"
+    | "/search"
+    | "/complex/$kaptCode";
+  fileRoutesById: FileRoutesById;
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
+  IndexRoute: typeof IndexRoute;
+  ChecklistRoute: typeof ChecklistRoute;
+  CorrectionsRoute: typeof CorrectionsRoute;
+  MethodologyRoute: typeof MethodologyRoute;
+  PrivacyRoute: typeof PrivacyRoute;
+  RankingRoute: typeof RankingRoute;
+  SearchRoute: typeof SearchRoute;
+  ComplexKaptCodeRoute: typeof ComplexKaptCodeRoute;
 }
 
-declare module '@tanstack/react-router' {
+declare module "@tanstack/react-router" {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
+    "/": {
+      id: "/";
+      path: "/";
+      fullPath: "/";
+      preLoaderRoute: typeof IndexRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/checklist": {
+      id: "/checklist";
+      path: "/checklist";
+      fullPath: "/checklist";
+      preLoaderRoute: typeof ChecklistRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/corrections": {
+      id: "/corrections";
+      path: "/corrections";
+      fullPath: "/corrections";
+      preLoaderRoute: typeof CorrectionsRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/methodology": {
+      id: "/methodology";
+      path: "/methodology";
+      fullPath: "/methodology";
+      preLoaderRoute: typeof MethodologyRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/privacy": {
+      id: "/privacy";
+      path: "/privacy";
+      fullPath: "/privacy";
+      preLoaderRoute: typeof PrivacyRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/ranking": {
+      id: "/ranking";
+      path: "/ranking";
+      fullPath: "/ranking";
+      preLoaderRoute: typeof RankingRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/search": {
+      id: "/search";
+      path: "/search";
+      fullPath: "/search";
+      preLoaderRoute: typeof SearchRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/complex/$kaptCode": {
+      id: "/complex/$kaptCode";
+      path: "/complex/$kaptCode";
+      fullPath: "/complex/$kaptCode";
+      preLoaderRoute: typeof ComplexKaptCodeRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-}
+  ChecklistRoute: ChecklistRoute,
+  CorrectionsRoute: CorrectionsRoute,
+  MethodologyRoute: MethodologyRoute,
+  PrivacyRoute: PrivacyRoute,
+  RankingRoute: RankingRoute,
+  SearchRoute: SearchRoute,
+  ComplexKaptCodeRoute: ComplexKaptCodeRoute,
+};
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
-  ._addFileTypes<FileRouteTypes>()
+  ._addFileTypes<FileRouteTypes>();

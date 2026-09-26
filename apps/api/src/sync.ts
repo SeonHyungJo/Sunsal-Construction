@@ -1,5 +1,5 @@
-import { complexes, type Db, syncRuns } from "@sunsal/db";
-import { asc, eq, sql } from "drizzle-orm";
+import { complexes, correctionRequests, type Db, syncRuns } from "@sunsal/db";
+import { and, asc, eq, inArray, lt, ne, sql } from "drizzle-orm";
 import { type ComplexBasis, fetchBasis, fetchListPage } from "./kapt.ts";
 
 async function recordRun(
@@ -120,4 +120,22 @@ export function syncBasis(db: Db, serviceKey: string, batch = 25) {
     }
     return { ok, changed, failed };
   });
+}
+
+/** 처리 완료 1년이 지난 정정 요청의 본문·연락처를 지운다 (개인정보처리방침 보관 기간). */
+const PURGED = "(보관 기간 경과로 삭제)";
+
+export async function purgeOldCorrections(db: Db) {
+  const rows = await db
+    .update(correctionRequests)
+    .set({ message: PURGED, contact: null })
+    .where(
+      and(
+        inArray(correctionRequests.status, ["applied", "rejected"]),
+        lt(correctionRequests.updatedAt, sql`now() - interval '1 year'`),
+        ne(correctionRequests.message, PURGED),
+      ),
+    )
+    .returning({ id: correctionRequests.id });
+  if (rows.length) console.log(`purged corrections: ${rows.length}`);
 }

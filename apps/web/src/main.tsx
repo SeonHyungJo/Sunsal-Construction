@@ -3,10 +3,18 @@ import { createRouter, RouterProvider } from "@tanstack/react-router";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { routeTree } from "./routeTree.gen";
+import { loadGtm } from "./lib/track";
 import "./index.css";
 
 const queryClient = new QueryClient();
-const router = createRouter({ routeTree });
+const router = createRouter({
+  routeTree,
+  context: { queryClient },
+  defaultPreload: "intent",
+  scrollRestoration: true,
+});
+
+loadGtm(import.meta.env.VITE_GTM_ID);
 
 declare module "@tanstack/react-router" {
   interface Register {

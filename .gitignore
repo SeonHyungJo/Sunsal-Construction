@@ -8,3 +8,5 @@ dist
 !.env.example
 *.tsbuildinfo
 .DS_Store
+!apps/web/.env
+responsive-shots

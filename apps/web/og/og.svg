@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <!-- public/og.png 원본. 수정 후 sharp로 1200x630 PNG 렌더링 (시스템 한글 폰트 사용) -->
+  <rect width="1200" height="630" fill="#faf8f3"/>
+  <rect x="0" y="0" width="1200" height="14" fill="#2a2522"/>
+  <g font-family="Apple SD Gothic Neo, Pretendard, sans-serif" fill="#2a2522">
+    <text x="80" y="130" font-size="40" font-weight="800">순살시공</text>
+    <text x="80" y="290" font-size="76" font-weight="800">우리 아파트 시공사,</text>
+    <text x="80" y="390" font-size="76" font-weight="800">공식 하자 판정 순위에 있을까?</text>
+    <text x="80" y="500" font-size="34" fill="#5c5650">국토교통부 공개 하자 판정 상위 20개 건설사 · 주소로 시공사 찾기</text>
+  </g>
+  <rect x="80" y="545" width="120" height="10" fill="#c8432b"/>
+</svg>

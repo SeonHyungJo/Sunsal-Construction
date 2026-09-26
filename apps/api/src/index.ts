@@ -4,12 +4,15 @@ import { createDb, type Db } from "@sunsal/db";
 import { Hono } from "hono";
 import { sendDailyReport } from "./report.ts";
 import { router } from "./router.ts";
-import { syncBasis, syncList } from "./sync.ts";
+import { purgeOldCorrections, syncBasis, syncList } from "./sync.ts";
 
 // wrangler.jsonc triggers.crons · alchemy.run.ts crons와 같게 유지한다. (UTC)
 const JOBS: Record<string, (db: Db, env: Env) => Promise<unknown>> = {
-  "0 18 * * *": (db, env) =>
-    env.DATA_GO_KR_KEY ? syncList(db, env.DATA_GO_KR_KEY) : skip("kapt_list"), // 03:00 KST
+  "0 18 * * *": async (db, env) => {
+    // 03:00 KST
+    await purgeOldCorrections(db);
+    await (env.DATA_GO_KR_KEY ? syncList(db, env.DATA_GO_KR_KEY) : skip("kapt_list"));
+  },
   "*/10 * * * *": (db, env) =>
     env.DATA_GO_KR_KEY ? syncBasis(db, env.DATA_GO_KR_KEY) : skip("kapt_basis"),
   "0 1 * * *": (db, env) => sendDailyReport(db, env), // 10:00 KST
@@ -26,6 +29,34 @@ const rpc = new RPCHandler(router, {
 });
 
 const app = new Hono<{ Bindings: Env }>();
+
+const PUBLIC_PATHS = [
+  "/",
+  "/ranking",
+  "/search",
+  "/methodology",
+  "/checklist",
+  "/corrections",
+  "/privacy",
+];
+
+// 요청 도메인을 그대로 쓰므로 배포 도메인이 바뀌어도 설정할 것이 없다.
+app.get("/robots.txt", (c) => {
+  const origin = new URL(c.req.url).origin;
+  return c.text(`User-agent: *\nAllow: /\nDisallow: /rpc/\n\nSitemap: ${origin}/sitemap.xml\n`);
+});
+
+app.get("/sitemap.xml", (c) => {
+  const origin = new URL(c.req.url).origin;
+  const urls = PUBLIC_PATHS.map((p) => `<url><loc>${origin}${p}</loc></url>`).join("");
+  return c.body(
+    `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls}</urlset>`,
+    200,
+    {
+      "content-type": "application/xml",
+    },
+  );
+});
 
 // oRPC가 body를 직접 읽으므로 이 앞에 body를 소비하는 미들웨어를 두지 않는다.
 app.use("/rpc/*", async (c, next) => {

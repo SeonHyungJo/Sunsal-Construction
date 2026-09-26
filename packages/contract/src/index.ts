@@ -1,5 +1,8 @@
 import { oc, type ContractRouterClient } from "@orpc/contract";
 import { z } from "zod";
+import { correctionKinds, correctionStatuses } from "./constants.ts";
+
+export { correctionKinds, correctionStatuses };
 
 const announcement = z.object({
   id: z.string(),
@@ -36,9 +39,6 @@ export const builderMatch = z.discriminatedUnion("status", [
   }),
   z.object({ status: z.literal("unknown") }), // 단지 데이터에 시공사 정보 없음
 ]);
-
-export const correctionKinds = ["builder_match", "ranking", "complex", "other"] as const;
-export const correctionStatuses = ["received", "reviewing", "applied", "rejected"] as const;
 
 /** 공개해도 되는 정정 요청 정보. 요청 본문·연락처는 포함하지 않는다. */
 const correctionPublic = z.object({

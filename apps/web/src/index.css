@@ -1,1 +1,67 @@
+/* Hallmark · macrostructure: Long Document (지면형 단일 열) · tone: utilitarian / public-record · anchor hue: vermilion 35°
+ * theme: custom (vibe: "공공 기록, 신문 지면, 절제된 경고색") · paper oklch(98% 0.006 85) · accent oklch(55% 0.19 35)
+ * type: 시스템 한글 산세리프 (display 800 · body 400 · 숫자 tnum). 웹폰트 없음 — 모바일 LCP·CLS 우선 (SSC-17) · nav: N6 masthead · footer: colophon(출처·고지)
+ * 상태 색 규칙: 명단 밖(not_listed)은 중립 잉크. 초록/파랑 등 "안전"으로 읽히는 색을 쓰지 않는다.
+ */
 @import "tailwindcss";
+
+@theme {
+  --font-sans:
+    Pretendard, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic",
+    "Noto Sans KR", system-ui, sans-serif;
+
+  --color-paper: oklch(98% 0.006 85);
+  --color-paper-2: oklch(95.5% 0.008 85);
+  --color-ink: oklch(22% 0.01 60);
+  --color-ink-2: oklch(42% 0.01 60);
+  --color-ink-3: oklch(48% 0.008 60); /* 보조 텍스트: paper·accent-soft·review-soft 위 4.5:1 이상 */
+  --color-rule: oklch(86% 0.01 80);
+  --color-accent: oklch(55% 0.19 35); /* 순위·강조 */
+  --color-accent-ink: oklch(98% 0.01 35);
+  --color-accent-soft: oklch(94% 0.035 35);
+  --color-review: oklch(50% 0.12 75); /* 매칭 확인 필요 (앰버) */
+  --color-review-soft: oklch(95% 0.04 85);
+  --color-focus: oklch(50% 0.2 265);
+
+  --text-display: clamp(1.75rem, 1.2rem + 2.6vw, 3rem);
+  --text-display--line-height: 1.2;
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@layer base {
+  html,
+  body {
+    overflow-x: clip;
+  }
+  body {
+    background: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    word-break: keep-all;
+    overflow-wrap: anywhere;
+  }
+  h1,
+  h2,
+  h3 {
+    font-style: normal;
+    text-wrap: balance;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+    }
+  }
+}
+
+@utility tnum {
+  font-variant-numeric: tabular-nums;
+}

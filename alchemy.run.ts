@@ -18,7 +18,10 @@ const db = await Hyperdrive("db", {
 export const site = await Vite("site", {
   name: `sunsal-${app.stage}`,
   entrypoint: "apps/api/src/index.ts",
-  assets: { directory: "apps/web/dist/client", run_worker_first: ["/rpc/*", "/api/*"] },
+  assets: {
+    directory: "apps/web/dist/client",
+    run_worker_first: ["/rpc/*", "/robots.txt", "/sitemap.xml"],
+  },
   spa: true,
   compatibility: "node",
   crons: ["0 18 * * *", "*/10 * * * *", "0 1 * * *", "30 1 * * *"], // apps/api/src/index.ts JOBS와 같게

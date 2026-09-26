@@ -1,7 +1,7 @@
 // 로컬 Supabase(`supabase start` + `pnpm db:migrate`)가 필요하다. DATABASE_URL이 없으면 건너뛴다.
 import { complexes, createDb, syncRuns } from "@sunsal/db";
-import { eq, like } from "drizzle-orm";
-import { afterAll, beforeEach, describe, expect, test, vi } from "vitest";
+import { and, eq, inArray, isNull, like, notLike } from "drizzle-orm";
+import { afterAll, beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
 import { syncBasis, syncList } from "./sync.ts";
 
 const url = process.env.DATABASE_URL;
@@ -17,9 +17,24 @@ describe.skipIf(!url)("K-apt sync (DB)", () => {
       .where(eq(complexes.kaptCode, code))
       .then((r) => r[0]!);
 
+  // 순환 대상은 시도 이력이 없는 단지가 먼저다. 샘플 시드의 미수집 단지가 끼지 않게 테스트 동안만 시도 시각을 채운다.
+  let parked: string[] = [];
+  beforeAll(async () => {
+    const rows = await db
+      .update(complexes)
+      .set({ basisAttemptedAt: new Date() })
+      .where(and(isNull(complexes.basisAttemptedAt), notLike(complexes.kaptCode, "TEST%")))
+      .returning({ code: complexes.kaptCode });
+    parked = rows.map((r) => r.code);
+  });
   beforeEach(() => db.delete(complexes).where(like(complexes.kaptCode, "TEST%")));
   afterAll(async () => {
     await db.delete(complexes).where(like(complexes.kaptCode, "TEST%"));
+    if (parked.length)
+      await db
+        .update(complexes)
+        .set({ basisAttemptedAt: null })
+        .where(inArray(complexes.kaptCode, parked));
     await db.$client.end();
   });
 
