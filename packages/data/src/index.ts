@@ -1,9 +1,10 @@
 // 순위·별칭은 레포 JSON을 Worker에 번들한다. 단지 데이터는 D1(apps/api/migrations)에 있다.
 import h1_2026 from "../data/announcements/2026-h1.json" with { type: "json" };
 import aliasJson from "../data/builder-aliases.json" with { type: "json" };
+import reviewJson from "../data/builder-review.json" with { type: "json" };
 import sampleJson from "../data/sample-complexes.json" with { type: "json" };
 import { normalizeCompanyName } from "./company.ts";
-import { parseAliases, parseAnnouncement } from "./snapshot.ts";
+import { parseAliases, parseAnnouncement, parseReviewNames } from "./snapshot.ts";
 
 export { normalizeCompanyName };
 
@@ -55,3 +56,8 @@ export const aliases: ReadonlyMap<string, string> = new Map(
 
 /** 로컬 개발·테스트용 가상 단지 (pnpm db:seed:local) */
 export const sampleComplexes = sampleJson as ComplexDataset;
+
+/** 순위 회사일 수 있지만 확인되지 않은 시공사 표기 (정규화). 매칭 시 needs_review로 보낸다. */
+export const reviewNames: ReadonlySet<string> = new Set(
+  parseReviewNames(reviewJson).map((r) => normalizeCompanyName(r.name)),
+);

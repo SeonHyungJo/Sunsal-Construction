@@ -36,3 +36,6 @@ const aliases = z.array(
 
 export const parseAnnouncement = (json: unknown) => announcement.parse(json);
 export const parseAliases = (json: unknown) => aliases.parse(json);
+
+const reviewNames = z.array(z.object({ name: z.string().min(1), reason: z.string().min(1) }));
+export const parseReviewNames = (json: unknown) => reviewNames.parse(json);

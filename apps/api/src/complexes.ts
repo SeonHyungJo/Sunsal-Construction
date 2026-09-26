@@ -55,6 +55,7 @@ export async function searchComplexes(db: D1Database, query: string, limit = 10)
     params.push(`%${t}%`);
   }
   if (!where.length) return [];
+  where.push("c.name NOT GLOB '테스트*'"); // K-apt 목록에 섞인 시험용 단지 (기본정보 없음)
 
   const from = long.length
     ? "complexes_fts f JOIN complexes c ON c.rowid = f.rowid"
@@ -76,7 +77,7 @@ export async function searchComplexes(db: D1Database, query: string, limit = 10)
     rows = (
       await db
         .prepare(
-          `SELECT ${COLUMNS} FROM complexes_fts f JOIN complexes c ON c.rowid = f.rowid WHERE complexes_fts MATCH ? LIMIT ${CANDIDATES}`,
+          `SELECT ${COLUMNS} FROM complexes_fts f JOIN complexes c ON c.rowid = f.rowid WHERE complexes_fts MATCH ? AND c.name NOT GLOB '테스트*' LIMIT ${CANDIDATES}`,
         )
         .bind(grams.map(quote).join(" OR "))
         .all<Row>()

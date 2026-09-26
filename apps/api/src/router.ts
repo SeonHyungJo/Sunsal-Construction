@@ -1,6 +1,6 @@
 import { implement } from "@orpc/server";
 import { contract } from "@sunsal/contract";
-import { aliases, ranking } from "@sunsal/data";
+import { aliases, ranking, reviewNames } from "@sunsal/data";
 import { matchBuilder } from "./match.ts";
 import { getComplex, hasComplexes, searchComplexes } from "./complexes.ts";
 import { corrections } from "./store.ts";
@@ -74,7 +74,7 @@ export const router = os.router({
     result: os.complex.result.handler(async ({ input, context, errors }) => {
       const c = await getComplex(context.env.DB, input.kaptCode);
       if (!c) throw errors.NOT_FOUND();
-      const m = matchBuilder(c.builderRaw, rankedKeys, aliases);
+      const m = matchBuilder(c.builderRaw, rankedKeys, aliases, reviewNames);
       const syncedAt = c.syncedAt ? new Date(c.syncedAt) : null;
       return {
         complex: {
