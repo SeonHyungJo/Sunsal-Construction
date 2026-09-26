@@ -35,4 +35,4 @@ pnpm build
 node scripts/responsive-check.mjs    # pnpm dev 실행 중, 320~1440px 가로 넘침 검사
 ```
 
-배포: `pnpm deploy` (D1 마이그레이션 적용 → wrangler `env.production` → https://sunsal.duruit.com). Worker secret은 `npx wrangler secret put <이름> --env production`. 운영 연결·출시 점검은 [`docs/launch-checklist.md`](docs/launch-checklist.md), 분석·캠페인은 [`docs/analytics-and-campaigns.md`](docs/analytics-and-campaigns.md).
+배포: `pnpm deploy` (= `build:prod` 운영 빌드 → `deploy:ci` D1 마이그레이션·배포) → https://sunsal.duruit.com. Cloudflare Workers Builds(Git 연동) 설정: 빌드 명령 `pnpm run build:prod`, 배포 명령 `pnpm run deploy:ci`. Worker secret은 `npx wrangler secret put <이름> --env production`. 운영 연결·출시 점검은 [`docs/launch-checklist.md`](docs/launch-checklist.md), 분석·캠페인은 [`docs/analytics-and-campaigns.md`](docs/analytics-and-campaigns.md).
