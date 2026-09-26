@@ -31,7 +31,7 @@
 
 ## 4. 광고·분석·알림
 
-- [ ] [계정] AdSense 사이트 승인 — `duruit.com` 등록·소유 확인 완료, 검토 중 (하위 도메인 포함). 승인 후 광고 단위(`VITE_ADSENSE_SLOT_*`) 생성, 결과 경로(`/complex/*`) Offerwall 설정
+- [ ] [계정] AdSense — **partner@duruit.com** 계정 가입(사업자 정보 입력은 직접) → 게시자 ID를 `apps/web/.env.production`·`public/ads.txt`·`index.html` 메타에 반영 → `duruit.com` 등록(AdSense는 최상위 도메인 단위, 하위 도메인 포함)·검토 → 승인 후 광고 단위·`/complex/*` Offerwall
 - [ ] [계정] 광고 차단 브라우저에서 결과가 그대로 보이는지
 - [ ] [계정] AdSense "개인정보 보호 및 메시지"에서 EEA·영국·스위스 동의 메시지 게시 (개인정보처리방침 문구와 일치)
 - [x] GTM(`GTM-WKBFBCB3`)·GA4(`G-B5BZ9YBS0F`) 연결, 운영 hit·실시간 보고서에서 이벤트·UTM 확인
