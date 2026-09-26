@@ -9,8 +9,9 @@
     "format": "oxfmt --write",
     "test": "pnpm -r test",
     "build": "pnpm --filter 'web...' build",
-    "deploy": "CLOUDFLARE_ENV=production pnpm build && cd apps/web && wrangler deploy --config dist/sunsal/wrangler.json",
-    "data:sync": "node packages/data/scripts/sync-kapt.ts"
+    "deploy": "CLOUDFLARE_ENV=production pnpm build && wrangler d1 migrations apply sunsal --remote --env production && cd apps/web && wrangler deploy --config dist/sunsal/wrangler.json",
+    "db:migrate:local": "wrangler d1 migrations apply sunsal --local",
+    "db:seed:local": "node packages/data/scripts/to-sql.ts packages/data/data/sample-complexes.json > .wrangler/sample.sql && wrangler d1 execute sunsal --local --file .wrangler/sample.sql"
   },
   "devDependencies": {
     "@types/node": "catalog:",

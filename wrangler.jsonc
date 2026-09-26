@@ -1,4 +1,4 @@
-// 최상위 = 로컬 개발(샘플 단지·로컬 KV). env.production = 운영 배포 (pnpm deploy).
+// 최상위 = 로컬 개발(로컬 D1·KV, pnpm db:seed:local로 샘플 단지). env.production = 운영 배포 (pnpm deploy).
 // env 아래 vars·바인딩·triggers는 상속되지 않으므로 운영에 필요한 것을 모두 다시 적는다.
 {
   "$schema": "node_modules/wrangler/config-schema.json",
@@ -10,9 +10,16 @@
     "not_found_handling": "single-page-application",
     "run_worker_first": ["/rpc/*", "/robots.txt", "/sitemap.xml"],
   },
-  "vars": { "DATA_MODE": "sample" },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "sunsal",
+      "database_id": "21088ffa-8c6c-420a-a83d-0b03d632bda1",
+      "migrations_dir": "apps/api/migrations",
+    },
+  ],
   "kv_namespaces": [{ "binding": "STORE", "id": "local" }],
-  "triggers": { "crons": ["0 1 * * *", "30 1 * * *"] },
+  "triggers": { "crons": ["0 18 * * *", "*/6 * * * *", "0 1 * * *", "30 1 * * *"] },
   "ratelimits": [
     { "name": "SEARCH_LIMITER", "namespace_id": "1001", "simple": { "limit": 30, "period": 60 } },
     {
@@ -27,9 +34,16 @@
       "name": "sunsal",
       "workers_dev": false,
       "routes": [{ "pattern": "sunsal.duruit.com", "custom_domain": true }],
-      "vars": {},
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "sunsal",
+          "database_id": "21088ffa-8c6c-420a-a83d-0b03d632bda1",
+          "migrations_dir": "apps/api/migrations",
+        },
+      ],
       "kv_namespaces": [{ "binding": "STORE", "id": "84615b954e8c4b04a64e392bf3b73f15" }],
-      "triggers": { "crons": ["0 1 * * *", "30 1 * * *"] },
+      "triggers": { "crons": ["0 18 * * *", "*/6 * * * *", "0 1 * * *", "30 1 * * *"] },
       "ratelimits": [
         {
           "name": "SEARCH_LIMITER",

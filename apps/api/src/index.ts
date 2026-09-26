@@ -3,10 +3,20 @@ import { RPCHandler } from "@orpc/server/fetch";
 import { Hono } from "hono";
 import { sendDailyReport } from "./report.ts";
 import { router } from "./router.ts";
+import { syncBasis, syncList } from "./sync.ts";
 
 // wrangler.jsonc triggers.crons(최상위·env.production)와 같게 유지한다. (UTC)
-// 10:00 KST 발송, 10:30 재시도 (이미 보냈으면 건너뜀)
-const REPORT_CRONS = new Set(["0 1 * * *", "30 1 * * *"]);
+const JOBS: Record<string, (env: Env) => Promise<unknown>> = {
+  "0 18 * * *": (env) => withKey(env, (key) => syncList(env.DB, key)), // 03:00 KST 단지 목록
+  "*/6 * * * *": (env) => withKey(env, (key) => syncBasis(env.DB, key)), // 단지 기본정보 20건
+  "0 1 * * *": (env) => sendDailyReport(env), // 10:00 KST 일간 리포트
+  "30 1 * * *": (env) => sendDailyReport(env), // 10:30 KST 재시도 (이미 보냈으면 건너뜀)
+};
+
+async function withKey(env: Env, job: (key: string) => Promise<unknown>) {
+  if (!env.DATA_GO_KR_KEY) return console.log("DATA_GO_KR_KEY 미설정, 단지 동기화 건너뜀");
+  await job(env.DATA_GO_KR_KEY);
+}
 
 const rpc = new RPCHandler(router, {
   // 입력값(검색어에 주소가 들어 있다)은 남기지 않고 오류 이름·메시지만 기록한다.
@@ -61,8 +71,8 @@ app.use("/rpc/*", async (c, next) => {
 export default {
   fetch: app.fetch,
   async scheduled(controller, env, ctx) {
-    if (!REPORT_CRONS.has(controller.cron))
-      return console.error(`unknown cron: ${controller.cron}`);
-    ctx.waitUntil(sendDailyReport(env));
+    const job = JOBS[controller.cron];
+    if (!job) return console.error(`unknown cron: ${controller.cron}`);
+    ctx.waitUntil(job(env));
   },
 } satisfies ExportedHandler<Env>;

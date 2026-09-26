@@ -1,4 +1,5 @@
-# 로컬 Worker 개발용. 비워두면 해당 기능은 "미설정"으로 동작한다. (단지 데이터는 wrangler.jsonc의 DATA_MODE=sample)
+# 로컬 Worker 개발용. 비워두면 해당 기능은 "미설정"으로 동작한다. (로컬 단지 데이터: pnpm db:migrate:local && pnpm db:seed:local)
+DATA_GO_KR_KEY=          # 공공데이터포털 인증키 (Decoding) — 로컬에서 단지 동기화 cron을 돌릴 때만
 ADMIN_TOKEN=             # 정정 요청 검토 API Bearer 토큰
 GOOGLE_CLIENT_ID=        # GA4·AdSense 조회용 OAuth (scope: analytics.readonly, adsense.readonly)
 GOOGLE_CLIENT_SECRET=

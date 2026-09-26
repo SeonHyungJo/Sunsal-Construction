@@ -22,50 +22,40 @@ export type ComplexBasis = {
 };
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+/** 호출 제한에 걸림. cron 회차를 멈추고 다음 회차에 이어간다. */
+export class ThrottledError extends Error {}
+
 // 호출 한도: 초당 한도(429 ..._PER_SECOND_EXCEEDS_ERROR)와, 짧은 시간에 40여 건을 넘기면
-// 원천 서버가 몇 분간 HTTP_ERROR(04)를 주는 숨은 한도가 있다. 간격을 두고, 둘 다 기다렸다 같은 요청을 재시도한다.
-// ponytail: 고정 간격 1초 + 고정 대기. 한도가 공식 확인되면 조정한다.
-const MIN_INTERVAL_MS = 1000;
-const THROTTLED_WAIT_MS = 60_000;
+// 원천 서버가 몇 분간 200 + HTTP_ERROR(04)를 주는 숨은 한도가 있다.
+// ponytail: 고정 간격 1.5초. 한도가 공식 확인되면 조정한다.
+export const throttle = { intervalMs: 1500 }; // 테스트에서 0으로 바꾼다
 let lastCall = 0;
 
-async function fetchJson(url: string) {
-  await sleep(Math.max(0, lastCall + MIN_INTERVAL_MS - Date.now()));
+async function call(url: string, params: Record<string, string>, serviceKey: string) {
+  await sleep(Math.max(0, lastCall + throttle.intervalMs - Date.now()));
   lastCall = Date.now();
-  const res = await fetch(url, { signal: AbortSignal.timeout(10_000) });
+  const qs = new URLSearchParams({ serviceKey, _type: "json", ...params });
+  const res = await fetch(`${url}?${qs.toString()}`, { signal: AbortSignal.timeout(10_000) });
   const text = await res.text();
-  if (res.status === 429) return { throttled: true as const };
+  if (res.status === 429) throw new ThrottledError("HTTP 429");
   if (!res.ok)
     throw new Error(`HTTP ${res.status} ${text.match(/[A-Z_]+_ERROR/)?.[0] ?? ""}`.trim());
   let json: any;
   try {
     json = JSON.parse(text);
   } catch {
-    // 일부 오류는 XML로 온다
     throw new Error(`non-JSON response: ${text.slice(0, 120).replace(/\s+/g, " ")}`);
   }
   // 게이트웨이 오류(인증·한도·원천 서버)는 200 + OpenAPI_ServiceResponse로 온다
   const gatewayError: string | undefined = json.OpenAPI_ServiceResponse?.cmmMsgHeader?.errMsg;
-  if (gatewayError === "HTTP_ERROR") return { throttled: true as const };
+  if (gatewayError === "HTTP_ERROR") throw new ThrottledError("gateway HTTP_ERROR");
   if (gatewayError) throw new Error(`gateway ${gatewayError}`);
-  return { json };
-}
-
-async function call(url: string, params: Record<string, string>, serviceKey: string) {
-  const full = `${url}?${new URLSearchParams({ serviceKey, _type: "json", ...params }).toString()}`;
-  for (let attempt = 0; ; attempt++) {
-    const r = await fetchJson(full);
-    if ("json" in r) {
-      const root = r.json.response ?? r.json;
-      const code = root.header?.resultCode;
-      if (code !== "00" && code !== "000")
-        throw new Error(`resultCode ${code}: ${root.header?.resultMsg}`);
-      return root.body ?? {};
-    }
-    if (attempt >= 5) throw new Error("throttled: 재시도 한도 초과");
-    console.log(`  호출 제한 — ${THROTTLED_WAIT_MS / 1000}초 대기 후 재시도`);
-    await sleep(THROTTLED_WAIT_MS);
-  }
+  const root = json.response ?? json;
+  const code = root.header?.resultCode;
+  if (code !== "00" && code !== "000")
+    throw new Error(`resultCode ${code}: ${root.header?.resultMsg}`);
+  return root.body ?? {};
 }
 
 const asArray = <T>(v: T | T[] | undefined): T[] => (v == null ? [] : Array.isArray(v) ? v : [v]);

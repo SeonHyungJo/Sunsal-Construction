@@ -1,6 +1,5 @@
-import type { Complex } from "@sunsal/data";
+import { type Complex, norm } from "@sunsal/data";
 
-const norm = (s: string) => s.normalize("NFKC").toLowerCase().replace(/\s+/g, "");
 const bigrams = (s: string) =>
   new Set(Array.from({ length: Math.max(s.length - 1, 0) }, (_, i) => s.slice(i, i + 2)));
 function dice(a: Set<string>, b: Set<string>) {
@@ -8,6 +7,25 @@ function dice(a: Set<string>, b: Set<string>) {
   let hit = 0;
   for (const x of a) if (b.has(x)) hit++;
   return (2 * hit) / (a.size + b.size);
+}
+
+type Ranked = { x: { name: string; c: Complex }; score: number };
+const byRank = (a: Ranked, b: Ranked) =>
+  b.score - a.score ||
+  a.x.name.length - b.x.name.length ||
+  a.x.c.kaptCode.localeCompare(b.x.c.kaptCode);
+
+/** 전체 정렬 없이 상위 k개만 유지한다 ("서울"처럼 수천 건이 걸리는 검색어의 CPU 시간 절약). */
+function topK<T>(items: T[], k: number, cmp: (a: T, b: T) => number) {
+  const top: T[] = [];
+  for (const item of items) {
+    if (top.length === k && cmp(item, top[k - 1]!) >= 0) continue;
+    let i = top.length;
+    while (i > 0 && cmp(item, top[i - 1]!) < 0) i--;
+    top.splice(i, 0, item);
+    if (top.length > k) top.pop();
+  }
+  return top;
 }
 
 /**
@@ -44,20 +62,11 @@ export function createSearch(items: readonly Complex[]) {
                 ? 1
                 : 0,
       }));
+    const qGrams = bigrams(whole);
     const ranked = exact.length
       ? exact
-      : index
-          .map((x) => ({ x, score: dice(bigrams(whole), x.grams) }))
-          .filter((r) => r.score >= 0.5);
+      : index.map((x) => ({ x, score: dice(qGrams, x.grams) })).filter((r) => r.score >= 0.5);
 
-    return ranked
-      .sort(
-        (a, b) =>
-          b.score - a.score ||
-          a.x.name.length - b.x.name.length ||
-          a.x.c.kaptCode.localeCompare(b.x.c.kaptCode),
-      )
-      .slice(0, limit)
-      .map((r) => r.x.c);
+    return topK(ranked, limit, byRank).map((r) => r.x.c);
   };
 }

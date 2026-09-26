@@ -10,5 +10,5 @@
     "../../packages/data/src/**/*.ts",
     "../../packages/contract/src/**/*.ts"
   ],
-  "exclude": ["**/*.test.ts", "../../packages/**/*.test.ts"]
+  "exclude": ["**/*.test.ts", "src/test-*.ts", "../../packages/**/*.test.ts"]
 }

@@ -1,8 +1,8 @@
 import { implement } from "@orpc/server";
 import { contract } from "@sunsal/contract";
-import { aliases, complexes, type ComplexDataset, ranking, sampleComplexes } from "@sunsal/data";
+import { aliases, ranking } from "@sunsal/data";
 import { matchBuilder } from "./match.ts";
-import { createSearch } from "./search.ts";
+import { getComplex, hasComplexes, searchComplexes } from "./complexes.ts";
 import { corrections } from "./store.ts";
 import { sendTelegram } from "./telegram.ts";
 
@@ -25,19 +25,6 @@ const toCompany = (r: (typeof ranking.rows)[number]) => ({
   companyCaseCount: r.caseCount,
   note: r.note,
 });
-
-function indexDataset(data: ComplexDataset) {
-  return {
-    data,
-    byCode: new Map(data.items.map((c) => [c.kaptCode, c])),
-    search: createSearch(data.items),
-  };
-}
-// 운영 데이터는 Worker 시작 시(전역) 색인해 요청 CPU 시간에 넣지 않는다. 샘플은 로컬 개발에서만 지연 생성.
-const live = indexDataset(complexes);
-let sample: ReturnType<typeof indexDataset> | undefined;
-const dataset = (env: Env) =>
-  env.DATA_MODE === "sample" ? (sample ??= indexDataset(sampleComplexes)) : live;
 
 /** 동·호수 같은 상세 주소는 검색에 필요 없고 개인정보라 버린다. */
 export function normalizeQuery(q: string) {
@@ -67,13 +54,14 @@ export const router = os.router({
 
   complex: {
     search: os.complex.search.handler(async ({ input, context, errors }) => {
-      const d = dataset(context.env);
-      if (d.data.items.length === 0) return { status: "not_ready" as const };
+      const db = context.env.DB;
       const q = normalizeQuery(input.q);
       if (q.length < 2) return { status: "too_short" as const };
       if (!(await context.env.SEARCH_LIMITER.limit({ key: context.ip })).success)
         throw errors.RATE_LIMITED();
-      const items = d.search(q).map((c) => ({
+      const found = await searchComplexes(db, q);
+      if (!found.length && !(await hasComplexes(db))) return { status: "not_ready" as const };
+      const items = found.map((c) => ({
         kaptCode: c.kaptCode,
         name: c.name,
         roadAddress: c.roadAddress,
@@ -83,8 +71,8 @@ export const router = os.router({
       return { status: "ok" as const, items };
     }),
 
-    result: os.complex.result.handler(({ input, context, errors }) => {
-      const c = dataset(context.env).byCode.get(input.kaptCode);
+    result: os.complex.result.handler(async ({ input, context, errors }) => {
+      const c = await getComplex(context.env.DB, input.kaptCode);
       if (!c) throw errors.NOT_FOUND();
       const m = matchBuilder(c.builderRaw, rankedKeys, aliases);
       const syncedAt = c.syncedAt ? new Date(c.syncedAt) : null;

@@ -1,3 +1,4 @@
+/// <reference types="@cloudflare/workers-types" />
 // 테스트용 메모리 KV (get/put/list + metadata). TTL은 기록만 한다.
 export function fakeKv() {
   const data = new Map<string, { value: string; metadata?: unknown; ttl?: number }>();

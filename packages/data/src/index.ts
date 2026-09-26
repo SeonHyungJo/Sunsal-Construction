@@ -1,12 +1,18 @@
-// 서비스 데이터는 모두 레포의 JSON이다. Worker는 번들된 이 값을 시작 시 한 번 읽어 메모리에서 쓴다.
+// 순위·별칭은 레포 JSON을 Worker에 번들한다. 단지 데이터는 D1(apps/api/migrations)에 있다.
 import h1_2026 from "../data/announcements/2026-h1.json" with { type: "json" };
 import aliasJson from "../data/builder-aliases.json" with { type: "json" };
-import complexJson from "../data/complexes.json" with { type: "json" };
 import sampleJson from "../data/sample-complexes.json" with { type: "json" };
 import { normalizeCompanyName } from "./company.ts";
 import { parseAliases, parseAnnouncement } from "./snapshot.ts";
 
 export { normalizeCompanyName };
+
+/** 검색 비교용: NFKC·소문자·공백 제거 ("광교중앙로 100" = "광교중앙로100") */
+export const norm = (s: string) => s.normalize("NFKC").toLowerCase().replace(/\s+/g, "");
+
+/** D1 complexes.search_text 값 */
+export const searchText = (c: Pick<Complex, "name" | "roadAddress" | "legalAddress">) =>
+  norm(`${c.name}${c.roadAddress ?? ""}${c.legalAddress ?? ""}`);
 
 export type Complex = {
   kaptCode: string;
@@ -47,6 +53,5 @@ export const aliases: ReadonlyMap<string, string> = new Map(
   ]),
 );
 
-export const complexes = complexJson as ComplexDataset;
-/** 로컬 개발용 가상 단지. 운영(DATA_MODE 미설정)에서는 쓰지 않는다. */
+/** 로컬 개발·테스트용 가상 단지 (pnpm db:seed:local) */
 export const sampleComplexes = sampleJson as ComplexDataset;

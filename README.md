@@ -6,24 +6,25 @@
 
 ```
 apps/web        Vite + React + TanStack Router/Query + Tailwind 4 (SPA)
-apps/api        Cloudflare Worker (Hono + oRPC): 순위·검색·결과·정정 요청 API, 일간 리포트 cron
+apps/api        Cloudflare Worker (Hono + oRPC): 순위·검색·결과·정정 요청 API, K-apt 동기화·일간 리포트 cron, D1 마이그레이션
 packages/contract  oRPC 계약 (Zod)
-packages/data   번들 데이터: 국토부 발표 스냅샷·시공사 별칭·K-apt 단지(complexes.json), 동기화 스크립트
+packages/data   순위 스냅샷·시공사 별칭(Worker 번들), 샘플 단지, JSON→D1 SQL 변환 스크립트
 ```
 
 ## 로컬 개발 (샘플 데이터)
 
-DB 없음. 순위·단지 데이터는 레포 JSON을 Worker에 번들하고, 정정 요청·리포트 기록만 Cloudflare KV에 둔다.
+Cloudflare만 쓴다: Worker(API·cron) + D1(단지 데이터, FTS5 trigram 검색) + KV(정정 요청·리포트 기록).
 
 ```sh
 pnpm install
-cp .dev.vars.example .dev.vars       # 비워두면 외부 연동은 "미설정"으로 동작
-pnpm dev                             # http://localhost:5173 (웹 + Worker, 샘플 단지·로컬 KV)
+pnpm db:migrate:local && pnpm db:seed:local   # 로컬 D1 + 샘플 단지
+cp .dev.vars.example .dev.vars                # 비워두면 외부 연동은 "미설정"으로 동작
+pnpm dev                                      # http://localhost:5173 (웹 + Worker)
 ```
 
-단지 데이터 갱신: `DATA_GO_KR_KEY=… pnpm data:sync` → `packages/data/data/complexes.json` 커밋 → `pnpm deploy`
+단지 데이터는 운영 Worker cron이 매일 목록(03:00 KST), 6분마다 기본정보 20건을 D1에 채운다 (`DATA_GO_KR_KEY` secret).
 
-cron 수동 실행: `curl "localhost:5173/cdn-cgi/handler/scheduled?cron=0+1+*+*+*"` (일간 리포트)
+cron 수동 실행: `curl "localhost:5173/cdn-cgi/handler/scheduled?cron=0+1+*+*+*"` (일간 리포트), `cron=*/6+*+*+*+*` (단지 기본정보)
 
 ## 검증
 
@@ -34,4 +35,4 @@ pnpm build
 node scripts/responsive-check.mjs    # pnpm dev 실행 중, 320~1440px 가로 넘침 검사
 ```
 
-배포: `pnpm deploy` (wrangler `env.production` → https://sunsal.duruit.com). Worker secret은 `npx wrangler secret put <이름> --env production`. 운영 연결·출시 점검은 [`docs/launch-checklist.md`](docs/launch-checklist.md), 분석·캠페인은 [`docs/analytics-and-campaigns.md`](docs/analytics-and-campaigns.md).
+배포: `pnpm deploy` (D1 마이그레이션 적용 → wrangler `env.production` → https://sunsal.duruit.com). Worker secret은 `npx wrangler secret put <이름> --env production`. 운영 연결·출시 점검은 [`docs/launch-checklist.md`](docs/launch-checklist.md), 분석·캠페인은 [`docs/analytics-and-campaigns.md`](docs/analytics-and-campaigns.md).

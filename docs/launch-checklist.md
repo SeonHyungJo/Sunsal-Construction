@@ -4,15 +4,15 @@
 
 ## 1. 환경 연결
 
-| 값                                                                                                 | 위치                 | 용도                                      |
-| -------------------------------------------------------------------------------------------------- | -------------------- | ----------------------------------------- |
-| `DATA_GO_KR_KEY`                                                                                   | `.env`               | `pnpm data:sync` (K-apt → complexes.json) |
-| `ADMIN_TOKEN`                                                                                      | `.env` / `.dev.vars` | 정정 요청 검토 API                        |
-| `GOOGLE_CLIENT_ID/SECRET/REFRESH_TOKEN`, `GA4_PROPERTY_ID`, `ADSENSE_ACCOUNT_ID`                   | `.env`               | 일간 리포트 지표                          |
-| `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`                                                           | `.env`               | 일간 리포트·정정 요청 알림                |
-| `VITE_SITE_URL`, `VITE_GTM_ID`, `VITE_ADSENSE_CLIENT`, `VITE_ADSENSE_SLOT_*`, `VITE_CONTACT_EMAIL` | 빌드 환경변수        | canonical·OG, 분석, 광고, 문의처          |
+| 값                                                                                                 | 위치                      | 용도                             |
+| -------------------------------------------------------------------------------------------------- | ------------------------- | -------------------------------- |
+| `DATA_GO_KR_KEY`                                                                                   | Worker secret (등록 완료) | 단지 동기화 cron                 |
+| `ADMIN_TOKEN`                                                                                      | `.env` / `.dev.vars`      | 정정 요청 검토 API               |
+| `GOOGLE_CLIENT_ID/SECRET/REFRESH_TOKEN`, `GA4_PROPERTY_ID`, `ADSENSE_ACCOUNT_ID`                   | `.env`                    | 일간 리포트 지표                 |
+| `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`                                                           | `.env`                    | 일간 리포트·정정 요청 알림       |
+| `VITE_SITE_URL`, `VITE_GTM_ID`, `VITE_ADSENSE_CLIENT`, `VITE_ADSENSE_SLOT_*`, `VITE_CONTACT_EMAIL` | 빌드 환경변수             | canonical·OG, 분석, 광고, 문의처 |
 
-배포: `pnpm deploy` → wrangler `env.production` (Worker + KV `sunsal-store` + 커스텀 도메인 `sunsal.duruit.com`). Worker secret(`ADMIN_TOKEN`, `GOOGLE_*`, `GA4_PROPERTY_ID`, `ADSENSE_ACCOUNT_ID`, `TELEGRAM_*`)은 `npx wrangler secret put <이름> --env production`으로 넣는다. 운영 빌드의 `VITE_SITE_URL`은 `apps/web/.env.production`.
+배포: `pnpm deploy` → D1 마이그레이션(`apps/api/migrations`) 적용 후 wrangler `env.production` (Worker + D1 `sunsal` + KV `sunsal-store` + 커스텀 도메인 `sunsal.duruit.com`). Worker secret(`ADMIN_TOKEN`, `GOOGLE_*`, `GA4_PROPERTY_ID`, `ADSENSE_ACCOUNT_ID`, `TELEGRAM_*`)은 `npx wrangler secret put <이름> --env production`으로 넣는다. 운영 빌드의 `VITE_SITE_URL`은 `apps/web/.env.production`.
 
 ## 2. 데이터
 
@@ -43,7 +43,7 @@
 
 - **정정 요청 처리**: Telegram 알림 → `POST /rpc/correction/review` (`Authorization: Bearer $ADMIN_TOKEN`, `{"json":{"id":"…","status":"applied","resolution":"…"}}`) → 데이터 수정은 JSON(`packages/data/data/`) 변경 후 `pnpm deploy`.
 - **새 국토부 발표**: `packages/data/data/announcements/{yyyy}-h{n}.json` 추가 + `packages/data/src/index.ts`에 import → 테스트 통과 → `pnpm deploy`.
-- **단지 데이터 갱신**: 주 1회 `pnpm data:sync` → `complexes.json` 커밋 → `pnpm deploy`. 호출 실패한 단지는 이전 값을 유지하고, 스크립트가 마지막에 성공·실패·미수집 건수를 출력한다.
+- **단지 데이터 갱신**: Worker cron이 자동 수행 (목록 매일 03:00 KST, 기본정보 6분마다 20건 ≈ 하루 4,800건). 진행 확인: `wrangler d1 execute sunsal --remote --env production --command "SELECT count(*), sum(synced_at IS NOT NULL) FROM complexes"`, 로그는 `wrangler tail --env production`. 호출 제한(HTTP_ERROR)이면 그 회차만 멈추고 다음 회차가 이어간다.
 - **리포트 미발송**: KV `report:{YYYY-MM-DD}`의 status(failed·not_configured)와 Worker 로그 확인.
 
 ## 6. 기록

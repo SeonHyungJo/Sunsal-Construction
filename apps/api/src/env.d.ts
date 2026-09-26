@@ -1,10 +1,11 @@
 interface Env {
   ASSETS: Fetcher;
+  DB: D1Database; // K-apt 단지 (apps/api/migrations)
   STORE: KVNamespace; // 정정 요청·일간 리포트 기록
   SEARCH_LIMITER: RateLimit;
   CORRECTION_LIMITER: RateLimit;
-  DATA_MODE?: "sample"; // 로컬 개발만. 운영은 비워 두어 실제 K-apt 데이터를 쓴다.
   // 아래는 연결 전이면 비어 있다. 비어 있으면 해당 기능은 "미설정"으로 동작한다.
+  DATA_GO_KR_KEY?: string; // 공공데이터포털 인증키 (Decoding) — 단지 동기화 cron
   ADMIN_TOKEN?: string;
   GOOGLE_CLIENT_ID?: string;
   GOOGLE_CLIENT_SECRET?: string;
