@@ -24,7 +24,11 @@ export type ComplexBasis = {
 async function call(url: string, params: Record<string, string>, serviceKey: string) {
   const qs = new URLSearchParams({ serviceKey, _type: "json", ...params });
   const res = await fetch(`${url}?${qs.toString()}`, { signal: AbortSignal.timeout(10_000) });
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  if (!res.ok) {
+    // 인증키 오류 등은 OpenAPI_ServiceResponse.cmmMsgHeader.errMsg로 온다
+    const body = await res.text();
+    throw new Error(`HTTP ${res.status} ${body.match(/[A-Z_]+_ERROR/)?.[0] ?? ""}`.trim());
+  }
   const text = await res.text();
   let json: any;
   try {

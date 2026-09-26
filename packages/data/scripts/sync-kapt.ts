@@ -78,6 +78,11 @@ for (const c of queue) {
   }
 }
 
+if (listed.length === 0 && ok === 0) {
+  console.error("받은 데이터가 없어 complexes.json을 그대로 둡니다.");
+  process.exit(1);
+}
+
 const items = [...byCode.values()].sort((a, b) => a.kaptCode.localeCompare(b.kaptCode));
 writeFileSync(
   file,
