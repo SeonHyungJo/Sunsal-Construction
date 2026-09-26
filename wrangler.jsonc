@@ -33,7 +33,11 @@
     "production": {
       "name": "sunsal",
       "workers_dev": false,
-      "routes": [{ "pattern": "sunsal.duruit.com", "custom_domain": true }],
+      "routes": [
+        { "pattern": "sunsal.duruit.com", "custom_domain": true },
+        // AdSense는 최상위 도메인 단위로 등록한다. duruit.com의 ads.txt만 이 Worker가 응답한다 (나머지는 duruit Worker).
+        { "pattern": "duruit.com/ads.txt", "zone_name": "duruit.com" },
+      ],
       "d1_databases": [
         {
           "binding": "DB",
