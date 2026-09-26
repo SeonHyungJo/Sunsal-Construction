@@ -1,0 +1,18 @@
+{
+  "name": "api",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "vitest run --passWithNoTests"
+  },
+  "dependencies": {
+    "@orpc/server": "catalog:",
+    "@sunsal/contract": "workspace:*",
+    "@sunsal/db": "workspace:*",
+    "hono": "catalog:"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "catalog:",
+    "vitest": "catalog:"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "name": "@sunsal/db",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/schema.ts"
+  },
+  "dependencies": {
+    "drizzle-orm": "catalog:"
+  }
+}

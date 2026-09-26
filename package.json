@@ -1,0 +1,29 @@
+{
+  "name": "sunsal-construction",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "pnpm --filter web dev",
+    "typecheck": "tsc -p tsconfig.json && tsc -p apps/api/tsconfig.json && tsc -p apps/web/tsconfig.json",
+    "lint": "oxlint --type-aware",
+    "format": "oxfmt --write",
+    "test": "pnpm -r test",
+    "build": "pnpm --filter 'web...' build",
+    "db:gen": "drizzle-kit generate --config packages/db/drizzle.config.ts",
+    "db:migrate": "drizzle-kit migrate --config packages/db/drizzle.config.ts",
+    "deploy": "pnpm build && alchemy deploy"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "alchemy": "catalog:",
+    "drizzle-kit": "catalog:",
+    "oxfmt": "catalog:",
+    "oxlint": "catalog:",
+    "oxlint-tsgolint": "catalog:",
+    "typescript": "catalog:"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "packageManager": "pnpm@11.22.0"
+}
