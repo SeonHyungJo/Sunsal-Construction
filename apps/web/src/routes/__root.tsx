@@ -33,6 +33,13 @@ function Root() {
   useEffect(() => {
     // 경로에는 단지코드만 있고 주소·검색어는 없다.
     track("page_view", { page_path: path });
+    // 검색엔진용 canonical은 경로마다 (쿼리·UTM 제외). 정적 index.html에 두면 모든 페이지가 홈으로 묶인다.
+    let link = document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
+    if (!link)
+      document.head.append(
+        (link = Object.assign(document.createElement("link"), { rel: "canonical" })),
+      );
+    link.href = import.meta.env.VITE_SITE_URL + path;
   }, [path]);
 
   return (
