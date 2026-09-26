@@ -26,6 +26,7 @@ try {
     if (items.length === 0 || listed.length >= totalCount) break;
   }
   listComplete = true;
+  console.log(`목록 ${listed.length}건`);
 } catch (e) {
   console.error(`목록 수집 중단 (${listed.length}건까지): ${String(e)}`);
 }
@@ -55,7 +56,9 @@ const queue = [...byCode.values()]
 let ok = 0,
   failed = 0,
   streak = 0;
-for (const c of queue) {
+for (const [i, c] of queue.entries()) {
+  if (i > 0 && i % 500 === 0)
+    console.log(`기본정보 ${i}/${queue.length} (성공 ${ok} · 실패 ${failed})`);
   try {
     const b = await fetchBasis(key, c.kaptCode);
     Object.assign(c, {
@@ -86,7 +89,8 @@ if (listed.length === 0 && ok === 0) {
 const items = [...byCode.values()].sort((a, b) => a.kaptCode.localeCompare(b.kaptCode));
 writeFileSync(
   file,
-  `${JSON.stringify({ generatedAt: new Date().toISOString(), items } satisfies ComplexDataset)}\n`,
+  // 한 단지 = 한 줄: git diff로 변경 단지를 볼 수 있게
+  `{"generatedAt":${JSON.stringify(new Date().toISOString())},"items":[\n${items.map((c) => JSON.stringify(c)).join(",\n")}\n]}\n`,
 );
 const pending = items.filter((c) => !c.syncedAt).length;
 console.log(

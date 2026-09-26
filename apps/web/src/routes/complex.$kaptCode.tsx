@@ -85,7 +85,11 @@ function ResultPage() {
       <div className="mt-6 grid gap-8 md:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
         <div>
           {/* 2. 핵심 결과 + 3. 해석 */}
-          <MatchBlock match={match} announcement={a} />
+          <MatchBlock
+            match={match}
+            announcement={a}
+            collected={data.complexDataSyncedAt !== null}
+          />
           <DataFreshness data={data} />
           <AdSlot slot={import.meta.env.VITE_ADSENSE_SLOT_RESULT} />
         </div>
@@ -164,9 +168,11 @@ function ResultPage() {
 function MatchBlock({
   match,
   announcement: a,
+  collected,
 }: {
   match: BuilderMatch;
   announcement: Result["announcement"];
+  collected: boolean; // K-apt 기본정보를 한 번이라도 받았는지
 }) {
   const period = a ? `${month(a.periodStart)}~${month(a.periodEnd)}` : "최근 6개월";
   const interpretation = (
@@ -230,23 +236,25 @@ function MatchBlock({
       return (
         <section aria-labelledby="result" className="border-l-4 border-rule bg-paper-2 p-5">
           <h2 id="result" className="font-bold">
-            시공사 정보가 없습니다
+            {collected ? "시공사 정보가 없습니다" : "시공사 정보를 수집하고 있습니다"}
           </h2>
           <p className="mt-3 text-sm leading-relaxed text-ink-2">
-            공동주택 기본정보에 이 단지의 시공사가 등록되어 있지 않아 순위를 확인할 수 없습니다.
+            {collected
+              ? "공동주택 기본정보에 이 단지의 시공사가 등록되어 있지 않아 순위를 확인할 수 없습니다."
+              : "이 단지의 상세 정보(주소·시공사)를 아직 받아오지 못했습니다. 며칠 안에 순서대로 채워집니다."}
           </p>
         </section>
       );
   }
 }
 
+/** 수집한 지 오래된 단지 안내. 아직 수집 전인 단지는 MatchBlock이 안내한다. */
 function DataFreshness({ data }: { data: Result }) {
-  if (!data.complexDataStale) return null;
+  if (!data.complexDataStale || !data.complexDataSyncedAt) return null;
   return (
     <p role="note" className="mt-4 border border-rule p-3 text-sm text-ink-2">
-      {data.complexDataSyncedAt
-        ? `단지 정보가 ${dateTime(data.complexDataSyncedAt)}에 마지막으로 수집되어 최신이 아닐 수 있습니다.`
-        : "이 단지의 상세 정보는 아직 수집 전입니다. 시공사가 표시되지 않을 수 있습니다."}
+      단지 정보가 {dateTime(data.complexDataSyncedAt)}에 마지막으로 수집되어 최신이 아닐 수
+      있습니다.
     </p>
   );
 }

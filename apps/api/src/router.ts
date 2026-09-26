@@ -26,29 +26,18 @@ const toCompany = (r: (typeof ranking.rows)[number]) => ({
   note: r.note,
 });
 
-// 번들된 단지 데이터는 isolate마다 한 번만 색인한다.
-const datasets = new Map<
-  string,
-  {
-    data: ComplexDataset;
-    byCode: Map<string, ComplexDataset["items"][number]>;
-    search: ReturnType<typeof createSearch>;
-  }
->();
-function dataset(env: Env) {
-  const mode = env.DATA_MODE === "sample" ? "sample" : "live";
-  let d = datasets.get(mode);
-  if (!d) {
-    const data = mode === "sample" ? sampleComplexes : complexes;
-    d = {
-      data,
-      byCode: new Map(data.items.map((c) => [c.kaptCode, c])),
-      search: createSearch(data.items),
-    };
-    datasets.set(mode, d);
-  }
-  return d;
+function indexDataset(data: ComplexDataset) {
+  return {
+    data,
+    byCode: new Map(data.items.map((c) => [c.kaptCode, c])),
+    search: createSearch(data.items),
+  };
 }
+// 운영 데이터는 Worker 시작 시(전역) 색인해 요청 CPU 시간에 넣지 않는다. 샘플은 로컬 개발에서만 지연 생성.
+const live = indexDataset(complexes);
+let sample: ReturnType<typeof indexDataset> | undefined;
+const dataset = (env: Env) =>
+  env.DATA_MODE === "sample" ? (sample ??= indexDataset(sampleComplexes)) : live;
 
 /** 동·호수 같은 상세 주소는 검색에 필요 없고 개인정보라 버린다. */
 export function normalizeQuery(q: string) {
