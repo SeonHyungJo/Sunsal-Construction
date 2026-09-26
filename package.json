@@ -9,16 +9,16 @@
     "format": "oxfmt --write",
     "test": "pnpm -r test",
     "build": "pnpm --filter 'web...' build",
-    "deploy": "pnpm build && alchemy deploy --stage prod",
+    "deploy": "CLOUDFLARE_ENV=production pnpm build && cd apps/web && wrangler deploy --config dist/sunsal/wrangler.json",
     "data:sync": "node packages/data/scripts/sync-kapt.ts"
   },
   "devDependencies": {
     "@types/node": "catalog:",
-    "alchemy": "catalog:",
     "oxfmt": "catalog:",
     "oxlint": "catalog:",
     "oxlint-tsgolint": "catalog:",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "wrangler": "catalog:"
   },
   "engines": {
     "node": ">=24"

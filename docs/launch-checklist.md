@@ -6,14 +6,13 @@
 
 | 값                                                                                                 | 위치                 | 용도                                      |
 | -------------------------------------------------------------------------------------------------- | -------------------- | ----------------------------------------- |
-| `ALCHEMY_PASSWORD`, `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`                                | `.env`               | `pnpm deploy`                             |
 | `DATA_GO_KR_KEY`                                                                                   | `.env`               | `pnpm data:sync` (K-apt → complexes.json) |
 | `ADMIN_TOKEN`                                                                                      | `.env` / `.dev.vars` | 정정 요청 검토 API                        |
 | `GOOGLE_CLIENT_ID/SECRET/REFRESH_TOKEN`, `GA4_PROPERTY_ID`, `ADSENSE_ACCOUNT_ID`                   | `.env`               | 일간 리포트 지표                          |
 | `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`                                                           | `.env`               | 일간 리포트·정정 요청 알림                |
 | `VITE_SITE_URL`, `VITE_GTM_ID`, `VITE_ADSENSE_CLIENT`, `VITE_ADSENSE_SLOT_*`, `VITE_CONTACT_EMAIL` | 빌드 환경변수        | canonical·OG, 분석, 광고, 문의처          |
 
-배포: `pnpm deploy` → alchemy stage `prod`, Worker + KV + 커스텀 도메인 `sunsal.duruit.com`. 운영 빌드의 `VITE_SITE_URL`은 `apps/web/.env.production`.
+배포: `pnpm deploy` → wrangler `env.production` (Worker + KV `sunsal-store` + 커스텀 도메인 `sunsal.duruit.com`). Worker secret(`ADMIN_TOKEN`, `GOOGLE_*`, `GA4_PROPERTY_ID`, `ADSENSE_ACCOUNT_ID`, `TELEGRAM_*`)은 `npx wrangler secret put <이름> --env production`으로 넣는다. 운영 빌드의 `VITE_SITE_URL`은 `apps/web/.env.production`.
 
 ## 2. 데이터
 

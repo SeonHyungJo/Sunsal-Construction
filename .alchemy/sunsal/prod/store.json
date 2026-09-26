@@ -1,0 +1,25 @@
+{
+  "kind": "cloudflare::KVNamespace",
+  "id": "store",
+  "fqn": "sunsal/prod/store",
+  "seq": 0,
+  "status": "creating",
+  "data": {},
+  "output": {
+    "Symbol(alchemy::ResourceID)": "store",
+    "Symbol(alchemy::ResourceFQN)": "sunsal/prod/store",
+    "Symbol(alchemy::ResourceKind)": "cloudflare::KVNamespace",
+    "Symbol(alchemy::ResourceScope)": {
+      "@scope": null
+    },
+    "Symbol(alchemy::ResourceSeq)": 0,
+    "Symbol(alchemy::DestroyStrategy)": "sequential"
+  },
+  "props": {
+    "title": "sunsal-prod-store",
+    "dev": {
+      "force": false
+    }
+  },
+  "oldProps": {}
+}

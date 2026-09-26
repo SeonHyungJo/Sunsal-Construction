@@ -34,4 +34,4 @@ pnpm build
 node scripts/responsive-check.mjs    # pnpm dev 실행 중, 320~1440px 가로 넘침 검사
 ```
 
-배포: `pnpm deploy` (alchemy, stage prod → https://sunsal.duruit.com). 운영 연결·출시 점검은 [`docs/launch-checklist.md`](docs/launch-checklist.md), 분석·캠페인은 [`docs/analytics-and-campaigns.md`](docs/analytics-and-campaigns.md).
+배포: `pnpm deploy` (wrangler `env.production` → https://sunsal.duruit.com). Worker secret은 `npx wrangler secret put <이름> --env production`. 운영 연결·출시 점검은 [`docs/launch-checklist.md`](docs/launch-checklist.md), 분석·캠페인은 [`docs/analytics-and-campaigns.md`](docs/analytics-and-campaigns.md).

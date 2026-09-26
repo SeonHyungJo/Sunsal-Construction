@@ -4,7 +4,7 @@ import { Hono } from "hono";
 import { sendDailyReport } from "./report.ts";
 import { router } from "./router.ts";
 
-// wrangler.jsonc triggers.crons · alchemy.run.ts crons와 같게 유지한다. (UTC)
+// wrangler.jsonc triggers.crons(최상위·env.production)와 같게 유지한다. (UTC)
 // 10:00 KST 발송, 10:30 재시도 (이미 보냈으면 건너뜀)
 const REPORT_CRONS = new Set(["0 1 * * *", "30 1 * * *"]);
 

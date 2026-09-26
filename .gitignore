@@ -1,6 +1,5 @@
 node_modules
 dist
-.alchemy
 .wrangler
 .dev.vars*
 !.dev.vars.example
