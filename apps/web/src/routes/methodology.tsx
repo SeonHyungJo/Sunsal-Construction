@@ -23,8 +23,9 @@ function Methodology() {
         <strong>최근 6개월 하자 판정 건수</strong> 기준 표를 그대로 옮깁니다. 건수는
         하자심사·분쟁조정위원회가 실제 하자로 판정한 <strong>세부 하자수</strong>이며, 판정 사건수는
         함께 표시합니다. 같은 건수는 같은 순위입니다. 같은 발표에 실린{" "}
-        <strong>최근 5년 누계</strong> 상위 20개사 표도 함께 보여줍니다(전체 순위 화면의 탭, 결과
-        화면의 두 번째 항목).
+        <strong>최근 5년 누계</strong> 상위 20개사 표와, 2023년 9월 1차부터의{" "}
+        <strong>반기별 발표</strong> 명단도 원문 그대로 보여줍니다. 최근 1년·연도별 순위와 21위
+        이하는 공개되지 않아 만들지 않습니다.
       </p>
       {data && <SourceLine announcement={data.announcement} location="methodology" />}
 
