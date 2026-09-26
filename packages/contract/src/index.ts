@@ -37,6 +37,22 @@ export const builderMatch = z.discriminatedUnion("status", [
   z.object({ status: z.literal("unknown") }), // 단지 데이터에 시공사 정보 없음
 ]);
 
+export const correctionKinds = ["builder_match", "ranking", "complex", "other"] as const;
+export const correctionStatuses = ["received", "reviewing", "applied", "rejected"] as const;
+
+/** 공개해도 되는 정정 요청 정보. 요청 본문·연락처는 포함하지 않는다. */
+const correctionPublic = z.object({
+  id: z.string(),
+  kind: z.enum(correctionKinds),
+  kaptCode: z.string().nullable(),
+  status: z.enum(correctionStatuses),
+  resolution: z.string().nullable(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+});
+
+const kaptCode = z.string().regex(/^[A-Z0-9]{6,12}$/);
+
 export const contract = {
   health: oc.output(z.object({ ok: z.literal(true) })),
 
@@ -56,7 +72,7 @@ export const contract = {
       ),
 
     result: oc
-      .input(z.object({ kaptCode: z.string().regex(/^[A-Z0-9]{6,12}$/) }))
+      .input(z.object({ kaptCode }))
       .errors({ NOT_FOUND: { status: 404 } })
       .output(
         z.object({
@@ -67,6 +83,40 @@ export const contract = {
           complexDataStale: z.boolean(), // 수집 이력이 없거나 오래됨
         }),
       ),
+  },
+
+  correction: {
+    create: oc
+      .input(
+        z.object({
+          kind: z.enum(correctionKinds),
+          kaptCode: kaptCode.optional(),
+          message: z.string().trim().min(10).max(2000),
+          contact: z.string().trim().max(200).optional(), // 답변이 필요할 때만 (이메일 등)
+        }),
+      )
+      .errors({ RATE_LIMITED: { status: 429 } })
+      .output(z.object({ id: z.string() })),
+
+    get: oc
+      .input(z.object({ id: z.uuid() }))
+      .errors({ NOT_FOUND: { status: 404 } })
+      .output(correctionPublic),
+
+    /** 처리 완료(반영·반려)된 정정 이력 */
+    log: oc.output(z.array(correctionPublic)),
+
+    /** 운영자 전용 (Authorization: Bearer ADMIN_TOKEN) */
+    review: oc
+      .input(
+        z.object({
+          id: z.uuid(),
+          status: z.enum(correctionStatuses),
+          resolution: z.string().trim().max(1000).optional(),
+        }),
+      )
+      .errors({ UNAUTHORIZED: { status: 401 }, NOT_FOUND: { status: 404 } })
+      .output(correctionPublic),
   },
 };
 

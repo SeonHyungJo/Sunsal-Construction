@@ -1,18 +1,43 @@
 import { implement } from "@orpc/server";
-import { contract } from "@sunsal/contract";
+import { contract, type correctionKinds, type correctionStatuses } from "@sunsal/contract";
 import {
   announcements,
   builderAliases,
   complexes,
   complexSearchText,
+  correctionRequests,
   type Db,
   rankingRows,
 } from "@sunsal/db";
-import { desc, eq, sql } from "drizzle-orm";
+import { desc, eq, inArray, sql } from "drizzle-orm";
 import { matchBuilder } from "./match.ts";
+import { sendTelegram } from "./telegram.ts";
 
-type Context = { db: Db; env: Env; ip: string };
+type Context = {
+  db: Db;
+  env: Env;
+  ip: string;
+  authorization: string | undefined;
+  waitUntil: (p: Promise<unknown>) => void;
+};
 const os = implement(contract).$context<Context>();
+
+const toCorrection = (r: typeof correctionRequests.$inferSelect) => ({
+  id: r.id,
+  kind: r.kind as (typeof correctionKinds)[number],
+  kaptCode: r.kaptCode,
+  status: r.status as (typeof correctionStatuses)[number],
+  resolution: r.resolution,
+  createdAt: r.createdAt.toISOString(),
+  updatedAt: r.updatedAt.toISOString(),
+});
+
+async function isAdmin({ env, authorization }: Context) {
+  if (!env.ADMIN_TOKEN || !authorization) return false;
+  const digest = (s: string) => crypto.subtle.digest("SHA-256", new TextEncoder().encode(s));
+  const [a, b] = await Promise.all([digest(authorization), digest(`Bearer ${env.ADMIN_TOKEN}`)]);
+  return crypto.subtle.timingSafeEqual(a, b);
+}
 
 const STALE_AFTER_MS = 30 * 24 * 60 * 60 * 1000;
 
@@ -118,6 +143,60 @@ export const router = os.router({
         complexDataSyncedAt: syncedAt?.toISOString() ?? null,
         complexDataStale: !syncedAt || Date.now() - syncedAt.getTime() > STALE_AFTER_MS,
       };
+    }),
+  },
+
+  correction: {
+    create: os.correction.create.handler(async ({ input, context, errors }) => {
+      if (!(await context.env.CORRECTION_LIMITER.limit({ key: context.ip })).success)
+        throw errors.RATE_LIMITED();
+      const [row] = await context.db
+        .insert(correctionRequests)
+        .values({
+          kind: input.kind,
+          kaptCode: input.kaptCode,
+          message: input.message,
+          contact: input.contact || null,
+        })
+        .returning({ id: correctionRequests.id });
+      // 본문·연락처는 알림에 싣지 않는다.
+      context.waitUntil(
+        sendTelegram(
+          context.env,
+          `순살시공 정정 요청 접수: ${input.kind} ${input.kaptCode ?? ""} (${row!.id})`,
+        ),
+      );
+      return { id: row!.id };
+    }),
+
+    get: os.correction.get.handler(async ({ input, context, errors }) => {
+      const [row] = await context.db
+        .select()
+        .from(correctionRequests)
+        .where(eq(correctionRequests.id, input.id));
+      if (!row) throw errors.NOT_FOUND();
+      return toCorrection(row);
+    }),
+
+    log: os.correction.log.handler(async ({ context }) => {
+      const rows = await context.db
+        .select()
+        .from(correctionRequests)
+        .where(inArray(correctionRequests.status, ["applied", "rejected"]))
+        .orderBy(desc(correctionRequests.updatedAt))
+        .limit(50);
+      return rows.map(toCorrection);
+    }),
+
+    review: os.correction.review.handler(async ({ input, context, errors }) => {
+      if (!(await isAdmin(context))) throw errors.UNAUTHORIZED();
+      const [row] = await context.db
+        .update(correctionRequests)
+        .set({ status: input.status, resolution: input.resolution ?? null, updatedAt: sql`now()` })
+        .where(eq(correctionRequests.id, input.id))
+        .returning();
+      if (!row) throw errors.NOT_FOUND();
+      return toCorrection(row);
     }),
   },
 });

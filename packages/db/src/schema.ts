@@ -11,6 +11,7 @@ import {
   primaryKey,
   text,
   timestamp,
+  uuid,
 } from "drizzle-orm/pg-core";
 
 /** 국토부 하자 판정 상위 건설사 발표 단위 스냅샷 */
@@ -97,4 +98,33 @@ export const syncRuns = pgTable("sync_runs", {
   changed: integer().notNull().default(0),
   failed: integer().notNull().default(0),
   error: text(),
+}).enableRLS();
+
+/**
+ * 순위·시공사 매칭·단지 정보 정정 요청. 접수(received) → 검토(reviewing) → 반영(applied) 또는 반려(rejected).
+ * message·contact는 공개하지 않는다.
+ */
+export const correctionRequests = pgTable(
+  "correction_requests",
+  {
+    id: uuid().primaryKey().defaultRandom(),
+    kind: text().notNull(), // builder_match | ranking | complex | other
+    kaptCode: text(),
+    message: text().notNull(),
+    contact: text(),
+    status: text().notNull().default("received"),
+    resolution: text(), // 반영 내용 또는 반려 사유 (공개)
+    createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("correction_requests_status_updated_idx").on(t.status, t.updatedAt)],
+).enableRLS();
+
+/** Telegram 일간 리포트 발송 기록. report_date당 한 번만 보낸다. */
+export const dailyReports = pgTable("daily_reports", {
+  reportDate: date().primaryKey(), // KST 기준 집계일
+  status: text().notNull(), // sent | failed | not_configured
+  message: text().notNull(),
+  attempts: integer().notNull().default(0),
+  updatedAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
 }).enableRLS();

@@ -1,2 +1,10 @@
-# 공공데이터포털 인증키 (Decoding 키)
-DATA_GO_KR_KEY=
+# 로컬 Worker 개발용. 비워두면 해당 기능은 "미설정"으로 동작한다.
+DATA_GO_KR_KEY=          # 공공데이터포털 인증키 (Decoding)
+ADMIN_TOKEN=             # 정정 요청 검토 API Bearer 토큰
+GOOGLE_CLIENT_ID=        # GA4·AdSense 조회용 OAuth (scope: analytics.readonly, adsense.readonly)
+GOOGLE_CLIENT_SECRET=
+GOOGLE_REFRESH_TOKEN=
+GA4_PROPERTY_ID=         # 숫자 속성 ID
+ADSENSE_ACCOUNT_ID=      # pub-xxxxxxxxxxxxxxxx
+TELEGRAM_BOT_TOKEN=
+TELEGRAM_CHAT_ID=
