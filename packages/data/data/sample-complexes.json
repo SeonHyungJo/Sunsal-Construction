@@ -1,0 +1,104 @@
+{
+  "generatedAt": "2026-09-25T00:00:00Z",
+  "items": [
+    {
+      "kaptCode": "A90000001",
+      "name": "샘플 라인캐슬",
+      "roadAddress": "경기도 수원시 영통구 광교중앙로 100",
+      "legalAddress": "경기도 수원시 영통구 이의동 100",
+      "builderRaw": "(주)라인건설",
+      "approvalDate": "2016-05-20",
+      "syncedAt": "2026-09-25T00:00:00Z"
+    },
+    {
+      "kaptCode": "A90000002",
+      "name": "샘플 신동아파밀리에",
+      "roadAddress": "서울특별시 관악구 남부순환로 200",
+      "legalAddress": "서울특별시 관악구 봉천동 200",
+      "builderRaw": "신동아건설(주)",
+      "approvalDate": "2012-11-01",
+      "syncedAt": "2026-09-25T00:00:00Z"
+    },
+    {
+      "kaptCode": "A90000003",
+      "name": "샘플 푸르지오",
+      "roadAddress": "서울특별시 강남구 테헤란로 300",
+      "legalAddress": "서울특별시 강남구 역삼동 300",
+      "builderRaw": "주식회사 대우건설",
+      "approvalDate": "2019-02-15",
+      "syncedAt": "2026-09-25T00:00:00Z"
+    },
+    {
+      "kaptCode": "A90000004",
+      "name": "샘플 래미안",
+      "roadAddress": "서울특별시 서초구 반포대로 400",
+      "legalAddress": "서울특별시 서초구 반포동 400",
+      "builderRaw": "삼성물산(주)",
+      "approvalDate": "2009-08-30",
+      "syncedAt": "2026-09-25T00:00:00Z"
+    },
+    {
+      "kaptCode": "A90000005",
+      "name": "샘플 래미안",
+      "roadAddress": "부산광역시 해운대구 센텀중앙로 500",
+      "legalAddress": "부산광역시 해운대구 우동 500",
+      "builderRaw": "삼성물산(주) 건설부문",
+      "approvalDate": "2014-03-10",
+      "syncedAt": "2026-09-25T00:00:00Z"
+    },
+    {
+      "kaptCode": "A90000006",
+      "name": "샘플 센텀 공동시공",
+      "roadAddress": "부산광역시 해운대구 센텀동로 600",
+      "legalAddress": "부산광역시 해운대구 재송동 600",
+      "builderRaw": "(주)대우건설, 현대건설(주)",
+      "approvalDate": "2021-06-30",
+      "syncedAt": "2026-09-25T00:00:00Z"
+    },
+    {
+      "kaptCode": "A90000007",
+      "name": "샘플 대우타운",
+      "roadAddress": "대구광역시 수성구 달구벌대로 700",
+      "legalAddress": "대구광역시 수성구 범어동 700",
+      "builderRaw": "대우",
+      "approvalDate": "1998-12-01",
+      "syncedAt": "2026-09-25T00:00:00Z"
+    },
+    {
+      "kaptCode": "A90000008",
+      "name": "샘플 시공사미상",
+      "roadAddress": "인천광역시 연수구 컨벤시아대로 800",
+      "legalAddress": "인천광역시 연수구 송도동 800",
+      "builderRaw": null,
+      "approvalDate": "2020-01-15",
+      "syncedAt": "2026-09-25T00:00:00Z"
+    },
+    {
+      "kaptCode": "A90000009",
+      "name": "샘플 한라비발디",
+      "roadAddress": "경기도 화성시 동탄대로 900",
+      "legalAddress": "경기도 화성시 동탄동 900",
+      "builderRaw": "(주)한라",
+      "approvalDate": "2017-09-01",
+      "syncedAt": "2026-09-25T00:00:00Z"
+    },
+    {
+      "kaptCode": "A90000010",
+      "name": "샘플 오래된단지",
+      "roadAddress": "광주광역시 서구 상무중앙로 1000",
+      "legalAddress": "광주광역시 서구 치평동 1000",
+      "builderRaw": "금호산업(주)",
+      "approvalDate": "2005-04-01",
+      "syncedAt": "2026-06-28T00:00:00Z"
+    },
+    {
+      "kaptCode": "A90000011",
+      "name": "샘플 미수집단지",
+      "roadAddress": null,
+      "legalAddress": null,
+      "builderRaw": null,
+      "approvalDate": null,
+      "syncedAt": null
+    }
+  ]
+}

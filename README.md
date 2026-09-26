@@ -6,20 +6,22 @@
 
 ```
 apps/web        Vite + React + TanStack Router/Query + Tailwind 4 (SPA)
-apps/api        Cloudflare Worker (Hono + oRPC): 검색·결과 API, K-apt 동기화·일간 리포트 cron
+apps/api        Cloudflare Worker (Hono + oRPC): 순위·검색·결과·정정 요청 API, 일간 리포트 cron
 packages/contract  oRPC 계약 (Zod)
-packages/db     Drizzle 스키마·SQL 마이그레이션, 국토부 발표 스냅샷(data/), 시드
+packages/data   번들 데이터: 국토부 발표 스냅샷·시공사 별칭·K-apt 단지(complexes.json), 동기화 스크립트
 ```
 
 ## 로컬 개발 (샘플 데이터)
 
+DB 없음. 순위·단지 데이터는 레포 JSON을 Worker에 번들하고, 정정 요청·리포트 기록만 Cloudflare KV에 둔다.
+
 ```sh
-supabase start                       # 로컬 Postgres (54322)
 pnpm install
-pnpm db:migrate && pnpm db:seed:sample
 cp .dev.vars.example .dev.vars       # 비워두면 외부 연동은 "미설정"으로 동작
-pnpm dev                             # http://localhost:5173 (웹 + Worker)
+pnpm dev                             # http://localhost:5173 (웹 + Worker, 샘플 단지·로컬 KV)
 ```
+
+단지 데이터 갱신: `DATA_GO_KR_KEY=… pnpm data:sync` → `packages/data/data/complexes.json` 커밋 → `pnpm deploy`
 
 cron 수동 실행: `curl "localhost:5173/cdn-cgi/handler/scheduled?cron=0+1+*+*+*"` (일간 리포트)
 
@@ -27,9 +29,9 @@ cron 수동 실행: `curl "localhost:5173/cdn-cgi/handler/scheduled?cron=0+1+*+*
 
 ```sh
 pnpm typecheck && pnpm lint
-DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:54322/postgres pnpm test   # DB 통합 테스트 포함
+pnpm test
 pnpm build
 node scripts/responsive-check.mjs    # pnpm dev 실행 중, 320~1440px 가로 넘침 검사
 ```
 
-운영 연결·출시 점검은 [`docs/launch-checklist.md`](docs/launch-checklist.md), 분석·캠페인은 [`docs/analytics-and-campaigns.md`](docs/analytics-and-campaigns.md).
+배포: `pnpm deploy` (alchemy, stage prod → https://sunsal.duruit.com). 운영 연결·출시 점검은 [`docs/launch-checklist.md`](docs/launch-checklist.md), 분석·캠페인은 [`docs/analytics-and-campaigns.md`](docs/analytics-and-campaigns.md).

@@ -1,5 +1,3 @@
-import { dailyReports, type Db } from "@sunsal/db";
-import { eq, sql } from "drizzle-orm";
 import {
   type AdsenseDaily,
   fetchAdsenseDaily,
@@ -8,6 +6,7 @@ import {
   googleAccessToken,
   type Result,
 } from "./google.ts";
+import { dailyReports, type DailyReport } from "./store.ts";
 import { sendTelegram } from "./telegram.ts";
 
 /** now 기준 KST 전날 (YYYY-MM-DD) */
@@ -53,9 +52,9 @@ export function buildReport(date: string, ga: Result<Ga4Daily>, ads: Result<Adse
 }
 
 /** 전일 리포트를 한 번만 보낸다. 10:00 실패 시 10:30 cron이 재시도한다. */
-export async function sendDailyReport(db: Db, env: Env, now = new Date()) {
+export async function sendDailyReport(env: Env, now = new Date()): Promise<DailyReport> {
   const date = yesterdayKst(now);
-  const [existing] = await db.select().from(dailyReports).where(eq(dailyReports.reportDate, date));
+  const existing = await dailyReports.get(env.STORE, date);
   if (existing?.status === "sent") return existing;
 
   const token = await googleAccessToken(env);
@@ -73,13 +72,7 @@ export async function sendDailyReport(db: Db, env: Env, now = new Date()) {
   const status = sent.ok ? "sent" : sent.error === "미설정" ? "not_configured" : "failed";
   if (!sent.ok && status === "failed") console.error(`Telegram send failed: ${sent.error}`);
 
-  const [row] = await db
-    .insert(dailyReports)
-    .values({ reportDate: date, status, message, attempts: 1 })
-    .onConflictDoUpdate({
-      target: dailyReports.reportDate,
-      set: { status, message, attempts: sql`${dailyReports.attempts} + 1`, updatedAt: sql`now()` },
-    })
-    .returning();
-  return row!;
+  const row: DailyReport = { status, message, attempts: (existing?.attempts ?? 0) + 1 };
+  await dailyReports.put(env.STORE, date, row);
+  return row;
 }

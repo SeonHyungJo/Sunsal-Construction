@@ -56,6 +56,8 @@ export function SearchBox({
       isDefinedError(search.error) && search.error.code === "RATE_LIMITED"
         ? "검색이 너무 잦습니다. 잠시 후 다시 시도해 주세요."
         : "검색 중 문제가 생겼습니다. 잠시 후 다시 시도해 주세요.";
+  else if (search.data?.status === "not_ready")
+    status = "단지 데이터를 준비하고 있습니다. 공식 순위는 지금 바로 확인할 수 있습니다.";
   else if (debounced.length >= 2 && search.isFetching && items.length === 0) status = "찾는 중…";
   else if (debounced.length >= 2 && search.isSuccess && items.length === 0)
     status =

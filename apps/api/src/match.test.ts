@@ -1,4 +1,4 @@
-import { normalizeCompanyName as n } from "@sunsal/db";
+import { normalizeCompanyName as n } from "@sunsal/data";
 import { expect, test } from "vitest";
 import { matchBuilder } from "./match.ts";
 

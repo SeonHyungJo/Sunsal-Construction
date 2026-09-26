@@ -10,3 +10,4 @@ dist
 .DS_Store
 !apps/web/.env
 responsive-shots
+!apps/web/.env.production

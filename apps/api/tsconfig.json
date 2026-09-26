@@ -2,11 +2,12 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "lib": ["ES2022"],
-    "types": ["@cloudflare/workers-types"]
+    "types": ["@cloudflare/workers-types"],
+    "resolveJsonModule": true
   },
   "include": [
     "src/**/*.ts",
-    "../../packages/db/src/**/*.ts",
+    "../../packages/data/src/**/*.ts",
     "../../packages/contract/src/**/*.ts"
   ],
   "exclude": ["**/*.test.ts", "../../packages/**/*.test.ts"]

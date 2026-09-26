@@ -4,5 +4,5 @@
     "lib": ["ES2022"],
     "types": ["node"]
   },
-  "include": ["alchemy.run.ts", "packages/db/**/*.ts"]
+  "include": ["alchemy.run.ts", "packages/data/**/*.ts"]
 }

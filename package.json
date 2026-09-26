@@ -9,16 +9,12 @@
     "format": "oxfmt --write",
     "test": "pnpm -r test",
     "build": "pnpm --filter 'web...' build",
-    "db:gen": "drizzle-kit generate --config packages/db/drizzle.config.ts",
-    "db:migrate": "drizzle-kit migrate --config packages/db/drizzle.config.ts",
-    "deploy": "pnpm build && alchemy deploy",
-    "db:seed": "node packages/db/scripts/seed.ts",
-    "db:seed:sample": "node packages/db/scripts/seed.ts --sample"
+    "deploy": "pnpm build && alchemy deploy --stage prod",
+    "data:sync": "node packages/data/scripts/sync-kapt.ts"
   },
   "devDependencies": {
     "@types/node": "catalog:",
     "alchemy": "catalog:",
-    "drizzle-kit": "catalog:",
     "oxfmt": "catalog:",
     "oxlint": "catalog:",
     "oxlint-tsgolint": "catalog:",

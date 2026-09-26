@@ -1,4 +1,4 @@
-import { normalizeCompanyName } from "@sunsal/db";
+import { normalizeCompanyName } from "@sunsal/data";
 
 export type MatchResult =
   | { status: "listed"; companyKey: string }

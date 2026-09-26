@@ -1,6 +1,7 @@
-import { expect, test } from "vitest";
+import { expect, test, vi } from "vitest";
+import { fakeKv } from "./test-kv.ts";
 import { parseAdsense, parseGa4 } from "./google.ts";
-import { buildReport, yesterdayKst } from "./report.ts";
+import { buildReport, sendDailyReport, yesterdayKst } from "./report.ts";
 
 test("yesterdayKst: KST 자정 경계", () => {
   expect(yesterdayKst(new Date("2026-09-26T01:00:00Z"))).toBe("2026-09-25"); // KST 10:00
@@ -80,4 +81,24 @@ test("buildReport: 한쪽 실패는 0이 아니라 실패로 표시", () => {
   expect(
     buildReport("2026-09-25", { ok: false, error: "미설정" }, { ok: true, data: ads }),
   ).toContain("GA4: 미설정");
+});
+
+test("sendDailyReport: 같은 날은 한 번만 발송", async () => {
+  const kv = fakeKv();
+  const base = { STORE: kv } as unknown as Env;
+  const now = new Date("2026-09-26T01:00:00Z");
+
+  // Telegram 미설정 → 발송 안 됨, 기록만
+  expect((await sendDailyReport(base, now)).status).toBe("not_configured");
+
+  let sends = 0;
+  vi.stubGlobal("fetch", async () => {
+    sends++;
+    return new Response("{}");
+  });
+  const env = { ...base, TELEGRAM_BOT_TOKEN: "t", TELEGRAM_CHAT_ID: "c" } as Env;
+  expect(await sendDailyReport(env, now)).toMatchObject({ status: "sent", attempts: 2 });
+  await sendDailyReport(env, new Date("2026-09-26T01:30:00Z")); // 10:30 재시도 cron
+  expect(sends).toBe(1);
+  vi.unstubAllGlobals();
 });

@@ -68,6 +68,7 @@ export const contract = {
         z.discriminatedUnion("status", [
           z.object({ status: z.literal("ok"), items: z.array(complexSummary) }),
           z.object({ status: z.literal("too_short") }),
+          z.object({ status: z.literal("not_ready") }), // 단지 데이터 수집 전
         ]),
       ),
 
@@ -112,7 +113,7 @@ export const contract = {
         z.object({
           id: z.uuid(),
           status: z.enum(correctionStatuses),
-          resolution: z.string().trim().max(1000).optional(),
+          resolution: z.string().trim().max(200).optional(), // KV metadata(1KB)에 들어가야 한다
         }),
       )
       .errors({ UNAUTHORIZED: { status: 401 }, NOT_FOUND: { status: 404 } })

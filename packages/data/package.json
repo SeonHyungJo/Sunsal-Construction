@@ -1,5 +1,5 @@
 {
-  "name": "@sunsal/db",
+  "name": "@sunsal/data",
   "private": true,
   "type": "module",
   "exports": {
@@ -9,8 +9,6 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "drizzle-orm": "catalog:",
-    "postgres": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {

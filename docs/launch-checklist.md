@@ -4,21 +4,20 @@
 
 ## 1. 환경 연결
 
-| 값                                                                                                 | 위치                 | 용도                                                                |
-| -------------------------------------------------------------------------------------------------- | -------------------- | ------------------------------------------------------------------- |
-| `DATABASE_URL`                                                                                     | `.env` (배포)        | Supabase 운영 프로젝트 · Hyperdrive origin · `db:migrate`/`db:seed` |
-| `ALCHEMY_PASSWORD`, `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`                                | `.env`               | `pnpm deploy`                                                       |
-| `DATA_GO_KR_KEY`                                                                                   | `.env` / `.dev.vars` | K-apt 동기화 cron                                                   |
-| `ADMIN_TOKEN`                                                                                      | `.env` / `.dev.vars` | 정정 요청 검토 API                                                  |
-| `GOOGLE_CLIENT_ID/SECRET/REFRESH_TOKEN`, `GA4_PROPERTY_ID`, `ADSENSE_ACCOUNT_ID`                   | `.env`               | 일간 리포트 지표                                                    |
-| `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`                                                           | `.env`               | 일간 리포트·정정 요청 알림                                          |
-| `VITE_SITE_URL`, `VITE_GTM_ID`, `VITE_ADSENSE_CLIENT`, `VITE_ADSENSE_SLOT_*`, `VITE_CONTACT_EMAIL` | 빌드 환경변수        | canonical·OG, 분석, 광고, 문의처                                    |
+| 값                                                                                                 | 위치                 | 용도                                      |
+| -------------------------------------------------------------------------------------------------- | -------------------- | ----------------------------------------- |
+| `ALCHEMY_PASSWORD`, `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`                                | `.env`               | `pnpm deploy`                             |
+| `DATA_GO_KR_KEY`                                                                                   | `.env`               | `pnpm data:sync` (K-apt → complexes.json) |
+| `ADMIN_TOKEN`                                                                                      | `.env` / `.dev.vars` | 정정 요청 검토 API                        |
+| `GOOGLE_CLIENT_ID/SECRET/REFRESH_TOKEN`, `GA4_PROPERTY_ID`, `ADSENSE_ACCOUNT_ID`                   | `.env`               | 일간 리포트 지표                          |
+| `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`                                                           | `.env`               | 일간 리포트·정정 요청 알림                |
+| `VITE_SITE_URL`, `VITE_GTM_ID`, `VITE_ADSENSE_CLIENT`, `VITE_ADSENSE_SLOT_*`, `VITE_CONTACT_EMAIL` | 빌드 환경변수        | canonical·OG, 분석, 광고, 문의처          |
 
-배포 순서: `DATABASE_URL=… pnpm db:migrate` → `pnpm db:seed` (샘플 아님) → `pnpm deploy`.
+배포: `pnpm deploy` → alchemy stage `prod`, Worker + KV + 커스텀 도메인 `sunsal.duruit.com`. 운영 빌드의 `VITE_SITE_URL`은 `apps/web/.env.production`.
 
 ## 2. 데이터
 
-- [x] 국토부 2026-h1 표 1~20위·건수 원문 대조 (`packages/db/src/snapshot.test.ts`)
+- [x] 국토부 2026-h1 표 1~20위·건수 원문 대조 (`packages/data/src/snapshot.test.ts`)
 - [ ] [계정] K-apt 실수집 후 표본 단지 10곳의 주소·시공사 원문·사용승인일을 K-apt 사이트와 대조
 - [ ] [계정] 20개사 관련 시공사 원문 표기 분포를 뽑아 별칭 검토 (`builder-aliases.json`)
 - [ ] [계정] 대표 주소·오타·동명 단지 검색 점검 (서울·부산·경기 각 3곳)
@@ -38,15 +37,15 @@
 - [ ] [계정] AdSense "개인정보 보호 및 메시지"에서 EEA·영국·스위스 동의 메시지 게시 (개인정보처리방침 문구와 일치)
 - [ ] [계정] GTM 미리보기·GA4 DebugView에서 `docs/analytics-and-campaigns.md` 이벤트와 UTM 캠페인 확인
 - [ ] [계정] 전일 리포트 수치를 GA4·AdSense 화면과 대조, 한쪽 권한을 빼고 "수집 실패" 표시 확인
-- [ ] [계정] 10:00·10:30 cron이 같은 날 한 번만 발송하는지 (`daily_reports`)
+- [ ] [계정] 10:00·10:30 cron이 같은 날 한 번만 발송하는지 (KV `report:*`)
 - [ ] [계정] 카카오톡·페이스북·X 링크 미리보기 (OG 이미지·제목)
 
 ## 5. 운영 절차
 
-- **정정 요청 처리**: Telegram 알림 → `POST /rpc/correction/review` (`Authorization: Bearer $ADMIN_TOKEN`, `{"json":{"id":"…","status":"applied","resolution":"…"}}`) → 데이터 수정은 JSON 변경 PR 후 `pnpm db:seed`.
-- **새 국토부 발표**: `packages/db/data/announcements/{yyyy}-h{n}.json` 추가 → 테스트 통과 → PR 검수 → `pnpm db:seed`.
-- **동기화 장애**: `sync_runs.error`, `complexes.basis_error` 확인. 실패해도 기존 단지 데이터는 유지된다.
-- **리포트 미발송**: `daily_reports.status`(failed·not_configured)와 Worker 로그 확인.
+- **정정 요청 처리**: Telegram 알림 → `POST /rpc/correction/review` (`Authorization: Bearer $ADMIN_TOKEN`, `{"json":{"id":"…","status":"applied","resolution":"…"}}`) → 데이터 수정은 JSON(`packages/data/data/`) 변경 후 `pnpm deploy`.
+- **새 국토부 발표**: `packages/data/data/announcements/{yyyy}-h{n}.json` 추가 + `packages/data/src/index.ts`에 import → 테스트 통과 → `pnpm deploy`.
+- **단지 데이터 갱신**: 주 1회 `pnpm data:sync` → `complexes.json` 커밋 → `pnpm deploy`. 호출 실패한 단지는 이전 값을 유지하고, 스크립트가 마지막에 성공·실패·미수집 건수를 출력한다.
+- **리포트 미발송**: KV `report:{YYYY-MM-DD}`의 status(failed·not_configured)와 Worker 로그 확인.
 
 ## 6. 기록
 

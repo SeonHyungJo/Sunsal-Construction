@@ -1,5 +1,5 @@
 import alchemy from "alchemy";
-import { Hyperdrive, RateLimit, Vite } from "alchemy/cloudflare";
+import { KVNamespace, RateLimit, Vite } from "alchemy/cloudflare";
 
 const app = await alchemy("sunsal");
 
@@ -9,11 +9,7 @@ const secrets = (names: string[]) =>
     names.filter((n) => process.env[n]).map((n) => [n, alchemy.secret(process.env[n])]),
   );
 
-// Supabase Postgres 연결 문자열 (Session pooler 또는 direct). 스테이지별로 다른 Supabase 프로젝트를 쓴다.
-const db = await Hyperdrive("db", {
-  name: `sunsal-${app.stage}`,
-  origin: alchemy.secret(process.env.DATABASE_URL),
-});
+const store = await KVNamespace("store", { title: `sunsal-${app.stage}-store` });
 
 export const site = await Vite("site", {
   name: `sunsal-${app.stage}`,
@@ -24,13 +20,13 @@ export const site = await Vite("site", {
   },
   spa: true,
   compatibility: "node",
-  crons: ["0 18 * * *", "*/10 * * * *", "0 1 * * *", "30 1 * * *"], // apps/api/src/index.ts JOBS와 같게
+  domains: app.stage === "prod" ? ["sunsal.duruit.com"] : [],
+  crons: ["0 1 * * *", "30 1 * * *"], // apps/api/src/index.ts REPORT_CRONS와 같게
   bindings: {
-    HYPERDRIVE: db,
+    STORE: store,
     SEARCH_LIMITER: RateLimit({ namespace_id: 1001, simple: { limit: 30, period: 60 } }),
     CORRECTION_LIMITER: RateLimit({ namespace_id: 1002, simple: { limit: 3, period: 60 } }),
     ...secrets([
-      "DATA_GO_KR_KEY",
       "ADMIN_TOKEN",
       "GOOGLE_CLIENT_ID",
       "GOOGLE_CLIENT_SECRET",
