@@ -35,7 +35,8 @@
 - [ ] [계정] 광고 차단 브라우저에서 결과가 그대로 보이는지
 - [ ] [계정] AdSense "개인정보 보호 및 메시지"에서 EEA·영국·스위스 동의 메시지 게시 (개인정보처리방침 문구와 일치)
 - [x] GTM(`GTM-WKBFBCB3`)·GA4(`G-B5BZ9YBS0F`) 연결, 운영 hit·실시간 보고서에서 이벤트·UTM 확인
-- [ ] [계정] 전일 리포트 수치를 GA4·AdSense 화면과 대조, 한쪽 권한을 빼고 "수집 실패" 표시 확인
+- [x] Google OAuth(partner@duruit.com, 내부 앱 `sunsal-reporting`)·Telegram(@sunsal_report_bot) 연결, 실제 API로 리포트 발송 확인 (2026-09-26)
+- [ ] [계정] 수익이 생긴 뒤 전일 추정 수익을 AdSense 보고서 화면과 대조
 - [ ] [계정] 10:00·10:30 cron이 같은 날 한 번만 발송하는지 (KV `report:*`)
 - [ ] [계정] 카카오톡·페이스북·X 링크 미리보기 (OG 이미지·제목)
 

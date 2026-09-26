@@ -1,4 +1,4 @@
-// 일간 리포트용 Google OAuth 갱신 토큰 발급 (developer@duruit.com으로 로그인해 승인).
+// 일간 리포트용 Google OAuth 갱신 토큰 발급 (partner@duruit.com으로 로그인해 승인).
 // 사용: node scripts/google-oauth.mjs <client.json> <out-token-file>
 //   client.json = {"client_id":"…","client_secret":"…"} (Google Cloud 데스크톱 앱 클라이언트)
 // 출력된 URL을 브라우저에서 열고 승인하면 갱신 토큰을 out 파일(권한 600)에만 저장한다. 토큰은 화면에 찍지 않는다.
@@ -15,6 +15,7 @@ const SCOPES = [
 ];
 
 const server = createServer(async (req, res) => {
+  res.setHeader("content-type", "text/plain; charset=utf-8");
   const url = new URL(req.url, "http://127.0.0.1");
   const code = url.searchParams.get("code");
   if (!code) return res.end(url.searchParams.get("error") ?? "no code");
@@ -51,7 +52,7 @@ server.listen(0, "127.0.0.1", () => {
     scope: SCOPES.join(" "),
     access_type: "offline",
     prompt: "consent",
-    login_hint: "developer@duruit.com",
+    login_hint: "partner@duruit.com",
   }).toString();
   console.log(`AUTH_URL ${auth}`);
 });
