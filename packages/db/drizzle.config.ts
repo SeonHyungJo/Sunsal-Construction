@@ -4,5 +4,8 @@ export default defineConfig({
   dialect: "postgresql",
   schema: "./packages/db/src/schema.ts",
   out: "./packages/db/migrations",
-  dbCredentials: { url: process.env.DATABASE_URL ?? "" },
+  casing: "snake_case",
+  dbCredentials: {
+    url: process.env.DATABASE_URL ?? "postgresql://postgres:postgres@127.0.0.1:54322/postgres",
+  },
 });

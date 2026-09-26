@@ -9,6 +9,7 @@
     "@orpc/server": "catalog:",
     "@sunsal/contract": "workspace:*",
     "@sunsal/db": "workspace:*",
+    "drizzle-orm": "catalog:",
     "hono": "catalog:"
   },
   "devDependencies": {

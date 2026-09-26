@@ -2,7 +2,7 @@ packages: ["apps/*", "packages/*"]
 
 catalog:
   "@cloudflare/vite-plugin": 1.57.3
-  "@cloudflare/workers-types": 5.20260923.1
+  "@cloudflare/workers-types": 5.20260925.1
   "@orpc/client": 1.15.4
   "@orpc/contract": 1.15.4
   "@orpc/server": 1.15.4
@@ -42,3 +42,6 @@ allowBuilds:
   esbuild: true
   workerd: true
   sharp: true
+
+overrides:
+  "@cloudflare/workers-types": "catalog:"

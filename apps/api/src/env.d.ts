@@ -1,5 +1,6 @@
 interface Env {
   ASSETS: Fetcher;
-  SUPABASE_URL: string;
-  SUPABASE_SERVICE_ROLE_KEY: string;
+  HYPERDRIVE: Hyperdrive;
+  SEARCH_LIMITER: RateLimit;
+  DATA_GO_KR_KEY: string;
 }

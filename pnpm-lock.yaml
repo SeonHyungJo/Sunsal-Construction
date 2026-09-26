@@ -9,9 +9,6 @@ catalogs:
     '@cloudflare/vite-plugin':
       specifier: 1.57.3
       version: 1.57.3
-    '@cloudflare/workers-types':
-      specifier: 5.20260923.1
-      version: 5.20260923.1
     '@orpc/client':
       specifier: 1.15.4
       version: 1.15.4
@@ -72,6 +69,9 @@ catalogs:
     oxlint-tsgolint:
       specifier: 7.0.2003
       version: 7.0.2003
+    postgres:
+      specifier: 3.4.9
+      version: 3.4.9
     react:
       specifier: 19.3.0
       version: 19.3.0
@@ -100,6 +100,9 @@ catalogs:
       specifier: 4.6.5
       version: 4.6.5
 
+overrides:
+  '@cloudflare/workers-types': 5.20260925.1
+
 importers:
 
   .:
@@ -109,7 +112,7 @@ importers:
         version: 24.13.6
       alchemy:
         specifier: 'catalog:'
-        version: 0.94.0(@cloudflare/vite-plugin@1.57.3(@types/node@24.13.6)(vite@8.3.1(@types/node@24.13.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))(wrangler@4.140.0(@cloudflare/workers-types@5.20260925.1)(@types/node@24.13.6)))(@types/node@24.13.6)(vite@8.3.1(@types/node@24.13.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))(workerd@1.20260923.1)
+        version: 0.94.0(@cloudflare/vite-plugin@1.57.3(@types/node@24.13.6)(vite@8.3.1(@types/node@24.13.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))(wrangler@4.140.0(@cloudflare/workers-types@5.20260925.1)(@types/node@24.13.6)))(@types/node@24.13.6)(postgres@3.4.9)(vite@8.3.1(@types/node@24.13.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))(workerd@1.20260923.1)
       drizzle-kit:
         specifier: 'catalog:'
         version: 0.31.11
@@ -137,13 +140,16 @@ importers:
       '@sunsal/db':
         specifier: workspace:*
         version: link:../../packages/db
+      drizzle-orm:
+        specifier: 'catalog:'
+        version: 0.45.3(@cloudflare/workers-types@5.20260925.1)(postgres@3.4.9)
       hono:
         specifier: 'catalog:'
         version: 4.13.9
     devDependencies:
       '@cloudflare/workers-types':
-        specifier: 'catalog:'
-        version: 5.20260923.1
+        specifier: 5.20260925.1
+        version: 5.20260925.1
       vitest:
         specifier: 'catalog:'
         version: 5.0.1(@types/node@24.13.6)(vite@8.3.1(@types/node@24.13.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
@@ -222,7 +228,17 @@ importers:
     dependencies:
       drizzle-orm:
         specifier: 'catalog:'
-        version: 0.45.3(@cloudflare/workers-types@5.20260925.1)
+        version: 0.45.3(@cloudflare/workers-types@5.20260925.1)(postgres@3.4.9)
+      postgres:
+        specifier: 'catalog:'
+        version: 3.4.9
+      zod:
+        specifier: 'catalog:'
+        version: 4.6.5
+    devDependencies:
+      vitest:
+        specifier: 'catalog:'
+        version: 5.0.1(@types/node@24.13.6)(vite@8.3.1(@types/node@24.13.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
 
 packages:
 
@@ -479,9 +495,6 @@ packages:
     engines: {node: '>=16'}
     cpu: [x64]
     os: [win32]
-
-  '@cloudflare/workers-types@5.20260923.1':
-    resolution: {integrity: sha512-zuOqyxfhzhN2LlxxcpnAS79aGVm9ku3ZcWKyvVLHyjPV6oHsuHSFidzSHhHE9ho9UTcUxU1IdtpdVuFXluKB+g==}
 
   '@cloudflare/workers-types@5.20260925.1':
     resolution: {integrity: sha512-E/Z3J8CzyNk0sinBu8g/1HjMCViSxG1kd/ARL8nzieSEdqtYZmgdnhlXbi95xyc3oetTwBR/r604/EuwuP6cnQ==}
@@ -2540,7 +2553,7 @@ packages:
     resolution: {integrity: sha512-CAloER21cDdcgZ1OmjrZX82EeRNsdP+y0onX/eyoYDaYzki/adrAa91lzM5jWh7zZPK4qUbw/6LGv9J+A+uizA==}
     peerDependencies:
       '@aws-sdk/client-rds-data': '>=3'
-      '@cloudflare/workers-types': '>=4'
+      '@cloudflare/workers-types': 5.20260925.1
       '@electric-sql/pglite': '>=0.2.0'
       '@libsql/client': '>=0.10.0'
       '@libsql/client-wasm': '>=0.10.0'
@@ -3142,6 +3155,10 @@ packages:
     resolution: {integrity: sha512-RRuzqDtt5Y9h3quz5hWhK+TPnsmVs6WwSU6LkJMeY4HstUEDuYTG8UJSdawMRzmzAtV+KEoG8N3Qg2qLy5vM/A==}
     engines: {node: ^10 || ^12 || >=14}
 
+  postgres@3.4.9:
+    resolution: {integrity: sha512-GD3qdB0x1z9xgFI6cdRD6xu2Sp2WCOEoe3mtnyB5Ee0XrrL5Pe+e4CCnJrRMnL1zYtRDZmQQVbvOttLnKDLnaw==}
+    engines: {node: '>=12'}
+
   prettier@3.9.9:
     resolution: {integrity: sha512-Z/CJHIkdujO/OtN7nXUii0Rf3VT5SRuhjBA82Xvu2XhBUgX3nhP67T0LHceBdQLex7OOFGTox+Q5Yg8Jk2Qivg==}
     engines: {node: '>=14'}
@@ -3544,7 +3561,7 @@ packages:
     engines: {node: '>=22.0.0'}
     hasBin: true
     peerDependencies:
-      '@cloudflare/workers-types': ^5.20260921.1
+      '@cloudflare/workers-types': 5.20260925.1
     peerDependenciesMeta:
       '@cloudflare/workers-types':
         optional: true
@@ -3554,7 +3571,7 @@ packages:
     engines: {node: '>=22.0.0'}
     hasBin: true
     peerDependencies:
-      '@cloudflare/workers-types': ^5.20260923.1
+      '@cloudflare/workers-types': 5.20260925.1
     peerDependenciesMeta:
       '@cloudflare/workers-types':
         optional: true
@@ -3976,8 +3993,6 @@ snapshots:
 
   '@cloudflare/workerd-windows-64@1.20260923.1':
     optional: true
-
-  '@cloudflare/workers-types@5.20260923.1': {}
 
   '@cloudflare/workers-types@5.20260925.1': {}
 
@@ -5202,7 +5217,7 @@ snapshots:
 
   '@vitest/spy@5.0.1': {}
 
-  alchemy@0.94.0(@cloudflare/vite-plugin@1.57.3(@types/node@24.13.6)(vite@8.3.1(@types/node@24.13.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))(wrangler@4.140.0(@cloudflare/workers-types@5.20260925.1)(@types/node@24.13.6)))(@types/node@24.13.6)(vite@8.3.1(@types/node@24.13.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))(workerd@1.20260923.1):
+  alchemy@0.94.0(@cloudflare/vite-plugin@1.57.3(@types/node@24.13.6)(vite@8.3.1(@types/node@24.13.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))(wrangler@4.140.0(@cloudflare/workers-types@5.20260925.1)(@types/node@24.13.6)))(@types/node@24.13.6)(postgres@3.4.9)(vite@8.3.1(@types/node@24.13.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))(workerd@1.20260923.1):
     dependencies:
       '@aws-sdk/credential-providers': 3.1140.0
       '@cloudflare/unenv-preset': 2.7.7(unenv@2.0.0-rc.21)(workerd@1.20260923.1)
@@ -5212,7 +5227,7 @@ snapshots:
       '@smithy/node-config-provider': 4.6.2
       '@smithy/types': 4.19.0
       aws4fetch: 1.0.20
-      drizzle-orm: 0.45.3(@cloudflare/workers-types@5.20260925.1)
+      drizzle-orm: 0.45.3(@cloudflare/workers-types@5.20260925.1)(postgres@3.4.9)
       env-paths: 3.0.0
       esbuild: 0.25.12
       execa: 9.6.1
@@ -5393,9 +5408,10 @@ snapshots:
       esbuild: 0.25.12
       tsx: 4.23.15
 
-  drizzle-orm@0.45.3(@cloudflare/workers-types@5.20260925.1):
+  drizzle-orm@0.45.3(@cloudflare/workers-types@5.20260925.1)(postgres@3.4.9):
     optionalDependencies:
       '@cloudflare/workers-types': 5.20260925.1
+      postgres: 3.4.9
 
   eastasianwidth@0.2.0: {}
 
@@ -5956,6 +5972,8 @@ snapshots:
       nanoid: 3.3.19
       picocolors: 1.1.1
       source-map-js: 1.2.1
+
+  postgres@3.4.9: {}
 
   prettier@3.9.9: {}
 
