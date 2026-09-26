@@ -35,13 +35,15 @@ export function matchBuilder(
   if (!normalized || PLACEHOLDER.test(normalized)) return { status: "unknown" };
   if (JOINT.test(raw)) return { status: "needs_review", reason: "multiple_builders" };
 
+  // 명단에 이름이 그대로 있으면 우선한다. 발표마다 합산 법인이 달라서다
+  // (예: ㈜한양은 2024년 명단에선 별도 순위, 2025-h2에선 비에스한양에 합산).
+  if (rankedKeys.has(normalized)) return { status: "listed", companyKey: normalized };
   // 검토된 별칭은 신원이 확정된 것이다. 이 명단에 그 회사가 없으면 유사도를 볼 필요 없이 명단 밖.
   const aliased = aliases.get(normalized);
   if (aliased)
     return rankedKeys.has(aliased)
       ? { status: "listed", companyKey: aliased }
       : { status: "not_listed" };
-  if (rankedKeys.has(normalized)) return { status: "listed", companyKey: normalized };
   if (reviewNames.has(normalized)) return { status: "needs_review", reason: "similar_name" };
   if (distinctNames.has(normalized)) return { status: "not_listed" };
 

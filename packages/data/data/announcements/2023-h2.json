@@ -1,0 +1,131 @@
+{
+  "id": "2023-h2",
+  "title": "하자판정건수 상위 20개 건설사 명단 공개한다",
+  "periodStart": "2023-03-01",
+  "periodEnd": "2023-08-31",
+  "publishedOn": "2023-09-25",
+  "sourceUrl": "https://www.korea.kr/briefing/pressReleaseView.do?newsId=156592265",
+  "sourceTable": "‵23.3~8월까지 판정받은 사건 중 세부하자수가 많은 20개사 현황",
+  "rows": [
+    {
+      "rank": 1,
+      "companyName": "지에스건설(주)",
+      "caseCount": 20,
+      "defectCount": 93
+    },
+    {
+      "rank": 2,
+      "companyName": "(주)상명종합건설",
+      "caseCount": 31,
+      "defectCount": 80
+    },
+    {
+      "rank": 3,
+      "companyName": "건곤(주)",
+      "caseCount": 11,
+      "defectCount": 65
+    },
+    {
+      "rank": 4,
+      "companyName": "에쓰와이이앤씨(주)",
+      "caseCount": 9,
+      "defectCount": 62
+    },
+    {
+      "rank": 5,
+      "companyName": "대양종합건설(주)",
+      "caseCount": 9,
+      "defectCount": 46
+    },
+    {
+      "rank": 6,
+      "companyName": "(주)수진종합건설",
+      "caseCount": 13,
+      "defectCount": 45
+    },
+    {
+      "rank": 7,
+      "companyName": "(유)신호건설산업",
+      "caseCount": 32,
+      "defectCount": 41
+    },
+    {
+      "rank": 7,
+      "companyName": "(주)대우주택",
+      "caseCount": 22,
+      "defectCount": 41
+    },
+    {
+      "rank": 7,
+      "companyName": "(주)우방",
+      "caseCount": 6,
+      "defectCount": 41
+    },
+    {
+      "rank": 10,
+      "companyName": "(주)정우종합건설",
+      "caseCount": 11,
+      "defectCount": 39
+    },
+    {
+      "rank": 11,
+      "companyName": "(주)동광주택",
+      "caseCount": 37,
+      "defectCount": 37
+    },
+    {
+      "rank": 12,
+      "companyName": "(주)동원개발",
+      "caseCount": 8,
+      "defectCount": 36
+    },
+    {
+      "rank": 13,
+      "companyName": "롯데건설(주)",
+      "caseCount": 8,
+      "defectCount": 35
+    },
+    {
+      "rank": 14,
+      "companyName": "현대건설(주)",
+      "caseCount": 20,
+      "defectCount": 33
+    },
+    {
+      "rank": 15,
+      "companyName": "(주)호반건설",
+      "caseCount": 12,
+      "defectCount": 31
+    },
+    {
+      "rank": 16,
+      "companyName": "(주)대명종합건설",
+      "caseCount": 4,
+      "defectCount": 28
+    },
+    {
+      "rank": 17,
+      "companyName": "(주)시티건설",
+      "caseCount": 7,
+      "defectCount": 27
+    },
+    {
+      "rank": 17,
+      "companyName": "(주)와이레노베이션",
+      "caseCount": 18,
+      "defectCount": 27
+    },
+    {
+      "rank": 19,
+      "companyName": "에스엠상선(주)",
+      "caseCount": 5,
+      "defectCount": 26
+    },
+    {
+      "rank": 20,
+      "companyName": "중흥건설(주)",
+      "caseCount": 6,
+      "defectCount": 22
+    }
+  ]
+}

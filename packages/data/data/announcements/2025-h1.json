@@ -1,0 +1,132 @@
+{
+  "id": "2025-h1",
+  "title": "'25년 상반기 공동주택 하자 판정 상위 건설사 명단 공개",
+  "periodStart": "2024-09-01",
+  "periodEnd": "2025-02-28",
+  "publishedOn": "2025-03-25",
+  "sourceUrl": "https://www.molit.go.kr/USR/NEWS/m_71/dtl.jsp?lcmspage=1&id=95090790",
+  "sourceTable": "참고3 하자판정 건수 상위 20개사의 하자 현황 · 6개월간('24.9.~'25.2.)",
+  "rows": [
+    {
+      "rank": 1,
+      "companyName": "(주)한화",
+      "caseCount": 16,
+      "defectCount": 97
+    },
+    {
+      "rank": 2,
+      "companyName": "현대건설(주)",
+      "caseCount": 17,
+      "defectCount": 81
+    },
+    {
+      "rank": 3,
+      "companyName": "대우조선해양건설(주)",
+      "caseCount": 31,
+      "defectCount": 80
+    },
+    {
+      "rank": 4,
+      "companyName": "한경기건(주)",
+      "caseCount": 78,
+      "defectCount": 79,
+      "note": "집합건물분쟁조정위원회 요청 오피스텔 등 집합건물 통계 포함"
+    },
+    {
+      "rank": 5,
+      "companyName": "삼부토건(주)",
+      "caseCount": 24,
+      "defectCount": 71
+    },
+    {
+      "rank": 6,
+      "companyName": "삼도종합건설(주)",
+      "caseCount": 9,
+      "defectCount": 64
+    },
+    {
+      "rank": 7,
+      "companyName": "(주)아이온산업개발",
+      "caseCount": 31,
+      "defectCount": 60
+    },
+    {
+      "rank": 8,
+      "companyName": "(주)대명수안",
+      "caseCount": 34,
+      "defectCount": 48
+    },
+    {
+      "rank": 9,
+      "companyName": "라임종합건설(주)",
+      "caseCount": 11,
+      "defectCount": 42
+    },
+    {
+      "rank": 10,
+      "companyName": "우미건설(주)",
+      "caseCount": 6,
+      "defectCount": 31
+    },
+    {
+      "rank": 10,
+      "companyName": "(주)원건설",
+      "caseCount": 4,
+      "defectCount": 31
+    },
+    {
+      "rank": 12,
+      "companyName": "한신공영(주)",
+      "caseCount": 4,
+      "defectCount": 25
+    },
+    {
+      "rank": 12,
+      "companyName": "(주)라인건설",
+      "caseCount": 8,
+      "defectCount": 25
+    },
+    {
+      "rank": 14,
+      "companyName": "(주)대우건설",
+      "caseCount": 6,
+      "defectCount": 20
+    },
+    {
+      "rank": 15,
+      "companyName": "(주)에이치제이중공업",
+      "caseCount": 3,
+      "defectCount": 19
+    },
+    {
+      "rank": 15,
+      "companyName": "두산건설(주)",
+      "caseCount": 5,
+      "defectCount": 19
+    },
+    {
+      "rank": 17,
+      "companyName": "(주)홍화",
+      "caseCount": 3,
+      "defectCount": 18
+    },
+    {
+      "rank": 18,
+      "companyName": "코오롱글로벌(주)",
+      "caseCount": 5,
+      "defectCount": 17
+    },
+    {
+      "rank": 19,
+      "companyName": "쌍용건설(주)",
+      "caseCount": 4,
+      "defectCount": 16
+    },
+    {
+      "rank": 20,
+      "companyName": "(주)안강건설",
+      "caseCount": 2,
+      "defectCount": 14
+    }
+  ]
+}

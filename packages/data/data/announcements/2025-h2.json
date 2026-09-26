@@ -1,0 +1,143 @@
+{
+  "id": "2025-h2",
+  "title": "'25년 하반기 공동주택 하자 판정 상위 20개 건설사 명단 공개",
+  "periodStart": "2025-03-01",
+  "periodEnd": "2025-08-31",
+  "publishedOn": "2025-10-21",
+  "sourceUrl": "https://www.korea.kr/briefing/pressReleaseView.do?newsId=156719662",
+  "sourceTable": "참고2 하자판정 건수 상위 20개사의 하자 현황 · 6개월간('25.3.~'25.8.)",
+  "rows": [
+    {
+      "rank": 1,
+      "companyName": "(주)에이치제이중공업",
+      "caseCount": 38,
+      "defectCount": 154,
+      "note": "(주)한진중공업을 포함한 자료임"
+    },
+    {
+      "rank": 2,
+      "companyName": "제일건설(주)",
+      "caseCount": 76,
+      "defectCount": 135
+    },
+    {
+      "rank": 3,
+      "companyName": "(주)순영종합건설",
+      "caseCount": 119,
+      "defectCount": 119,
+      "note": "집합건물분쟁조정위원회 요청 오피스텔 등 집합건물 통계 포함"
+    },
+    {
+      "rank": 4,
+      "companyName": "(주)대우건설",
+      "caseCount": 28,
+      "defectCount": 82
+    },
+    {
+      "rank": 5,
+      "companyName": "혜우이엔씨(주)",
+      "caseCount": 12,
+      "defectCount": 71
+    },
+    {
+      "rank": 6,
+      "companyName": "우미건설(주)",
+      "caseCount": 23,
+      "defectCount": 66
+    },
+    {
+      "rank": 7,
+      "companyName": "삼부토건(주)",
+      "caseCount": 27,
+      "defectCount": 48
+    },
+    {
+      "rank": 8,
+      "companyName": "에스지건설(주)",
+      "caseCount": 45,
+      "defectCount": 45
+    },
+    {
+      "rank": 9,
+      "companyName": "(주)한양종합건설",
+      "caseCount": 38,
+      "defectCount": 38
+    },
+    {
+      "rank": 10,
+      "companyName": "라온건설(주)",
+      "caseCount": 6,
+      "defectCount": 36
+    },
+    {
+      "rank": 11,
+      "companyName": "진흥기업(주)",
+      "caseCount": 6,
+      "defectCount": 30
+    },
+    {
+      "rank": 11,
+      "companyName": "신동아건설(주)",
+      "caseCount": 16,
+      "defectCount": 30
+    },
+    {
+      "rank": 13,
+      "companyName": "한신공영(주)",
+      "caseCount": 5,
+      "defectCount": 27
+    },
+    {
+      "rank": 14,
+      "companyName": "디에이치건설(주)",
+      "caseCount": 26,
+      "defectCount": 26,
+      "note": "집합건물분쟁조정위원회 요청 오피스텔 등 집합건물 통계 포함"
+    },
+    {
+      "rank": 15,
+      "companyName": "(주)비에스한양",
+      "caseCount": 15,
+      "defectCount": 23,
+      "note": "㈜한양을 포함한 자료임"
+    },
+    {
+      "rank": 16,
+      "companyName": "(주)포스코이앤씨",
+      "caseCount": 5,
+      "defectCount": 21
+    },
+    {
+      "rank": 17,
+      "companyName": "(주)일동",
+      "caseCount": 3,
+      "defectCount": 20
+    },
+    {
+      "rank": 18,
+      "companyName": "(주)삼우아이엠씨",
+      "caseCount": 13,
+      "defectCount": 19
+    },
+    {
+      "rank": 19,
+      "companyName": "현대건설(주)",
+      "caseCount": 5,
+      "defectCount": 18
+    },
+    {
+      "rank": 20,
+      "companyName": "대우조선해양건설(주)",
+      "caseCount": 6,
+      "defectCount": 17,
+      "note": "20위 동률(17건)로 21개사 공개"
+    },
+    {
+      "rank": 20,
+      "companyName": "에스케이에코플랜트(주)",
+      "caseCount": 9,
+      "defectCount": 17,
+      "note": "20위 동률(17건)로 21개사 공개"
+    }
+  ]
+}

@@ -12,6 +12,7 @@ const widths = [320, 390, 768, 1440];
 const pages = [
   "/",
   "/ranking",
+  "/ranking?period=half&id=2024-h1",
   "/search",
   "/complex/A90000001",
   "/complex/A90000004",

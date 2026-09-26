@@ -7,10 +7,68 @@ const dir = new URL("../data/", import.meta.url);
 const read = (p: string) => JSON.parse(readFileSync(new URL(p, dir), "utf8"));
 const files = readdirSync(new URL("announcements/", dir));
 
-test.each(files)("%s: 1~20위 원문 규칙", (file) => {
+test.each(files)("%s: 20위 이내, 회사 중복 없음", (file) => {
   const a = parseAnnouncement(read(`announcements/${file}`));
-  expect(a.rows).toHaveLength(20);
-  expect(new Set(a.rows.map((r) => normalizeCompanyName(r.companyName))).size).toBe(20);
+  expect(a.rows.length).toBeGreaterThanOrEqual(20); // 20위 동률이면 더 많을 수 있다
+  expect(Math.max(...a.rows.map((r) => r.rank))).toBeLessThanOrEqual(20);
+  expect(new Set(a.rows.map((r) => normalizeCompanyName(r.companyName))).size).toBe(a.rows.length);
+});
+
+// 각 보도자료 본문에 적힌 상위 5개사(세부 하자수) — 원문 대조
+test.each([
+  [
+    "2023-h2",
+    [
+      ["지에스건설(주)", 93],
+      ["(주)상명종합건설", 80],
+      ["건곤(주)", 65],
+      ["에쓰와이이앤씨(주)", 62],
+      ["대양종합건설(주)", 46],
+    ],
+  ],
+  [
+    "2024-h1",
+    [
+      ["(주)대송", 246],
+      ["현대엔지니어링(주)", 109],
+      ["지브이종합건설", 85],
+      ["(주)태영건설", 76],
+      ["주식회사플러스건설", 76],
+    ],
+  ],
+  [
+    "2024-h2",
+    [
+      ["현대엔지니어링(주)", 118],
+      ["재현건설산업(주)", 92],
+      ["지브이종합건설", 82],
+      ["라임종합건설(주)", 76],
+      ["삼도종합건설(주)", 71],
+    ],
+  ],
+  [
+    "2025-h1",
+    [
+      ["(주)한화", 97],
+      ["현대건설(주)", 81],
+      ["대우조선해양건설(주)", 80],
+      ["한경기건(주)", 79],
+      ["삼부토건(주)", 71],
+    ],
+  ],
+  [
+    "2025-h2",
+    [
+      ["(주)에이치제이중공업", 154],
+      ["제일건설(주)", 135],
+      ["(주)순영종합건설", 119],
+      ["(주)대우건설", 82],
+      ["혜우이엔씨(주)", 71],
+    ],
+  ],
+] as const)("%s 상위 5개사 원문 대조", (id, top5) => {
+  const a = parseAnnouncement(read(`announcements/${id}.json`));
+  expect(a.rows.slice(0, 5).map((r) => [r.companyName, r.defectCount])).toEqual(top5);
 });
 
 test("2026-h1 원문 대조 (보도자료 본문 상위 5개사)", () => {

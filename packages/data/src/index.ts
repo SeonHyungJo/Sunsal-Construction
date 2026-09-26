@@ -1,4 +1,9 @@
 // 순위·별칭은 레포 JSON을 Worker에 번들한다. 단지 데이터는 D1(apps/api/migrations)에 있다.
+import h2_2023 from "../data/announcements/2023-h2.json" with { type: "json" };
+import h1_2024 from "../data/announcements/2024-h1.json" with { type: "json" };
+import h2_2024 from "../data/announcements/2024-h2.json" with { type: "json" };
+import h1_2025 from "../data/announcements/2025-h1.json" with { type: "json" };
+import h2_2025 from "../data/announcements/2025-h2.json" with { type: "json" };
 import h1_2026 from "../data/announcements/2026-h1.json" with { type: "json" };
 import aliasJson from "../data/builder-aliases.json" with { type: "json" };
 import distinctJson from "../data/builder-distinct.json" with { type: "json" };
@@ -33,7 +38,7 @@ export type Complex = {
 export type ComplexDataset = { generatedAt: string | null; items: Complex[] };
 
 /** 새 발표를 추가하면 여기에 import를 더한다. publishedOn이 가장 최근인 발표를 쓴다. */
-const announcements = [h1_2026].map(parseAnnouncement);
+const announcements = [h2_2023, h1_2024, h2_2024, h1_2025, h2_2025, h1_2026].map(parseAnnouncement);
 const latest = announcements.sort((a, b) => b.publishedOn.localeCompare(a.publishedOn))[0]!;
 
 const toRows = (rows: typeof latest.rows) =>
@@ -62,6 +67,19 @@ export const ranking = {
       }
     : null,
 };
+
+/** 발표별 최근 6개월 명단 (최신순). 반기별 순위 화면에 쓴다. */
+export const history = announcements.map((a) => ({
+  announcement: {
+    id: a.id,
+    title: a.title,
+    periodStart: a.periodStart,
+    periodEnd: a.periodEnd,
+    publishedOn: a.publishedOn,
+    sourceUrl: a.sourceUrl,
+  },
+  rows: toRows(a.rows),
+}));
 
 /** 정규화한 별칭 → 정규화한 발표 회사 키 */
 export const aliases: ReadonlyMap<string, string> = new Map(

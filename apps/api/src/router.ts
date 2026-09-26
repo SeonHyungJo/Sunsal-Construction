@@ -1,6 +1,6 @@
 import { implement } from "@orpc/server";
 import { contract } from "@sunsal/contract";
-import { matchRules, ranking } from "@sunsal/data";
+import { history, matchRules, ranking } from "@sunsal/data";
 import { matchBuilder } from "./match.ts";
 import { getComplex, hasComplexes, searchComplexes } from "./complexes.ts";
 import { corrections } from "./store.ts";
@@ -67,6 +67,9 @@ export const router = os.router({
         companies: ranking.cumulative.rows.map(toCompany),
       },
     })),
+    history: os.ranking.history.handler(() =>
+      history.map((h) => ({ announcement: h.announcement, companies: h.rows.map(toCompany) })),
+    ),
   },
 
   complex: {

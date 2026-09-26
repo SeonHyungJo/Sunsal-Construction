@@ -9,7 +9,7 @@ const row = z.object({
 });
 
 type Row = z.infer<typeof row>;
-const rows = z.array(row).min(1).max(20);
+const rows = z.array(row).min(1).max(25); // 20위가 동률이면 20개사를 넘을 수 있다 (예: 2025-h2 21개사)
 
 /** 공동 순위 규칙: 판정 건수 내림차순, 같은 건수는 같은 순위, 다음 순위는 앞선 회사 수 + 1 */
 function checkRanks(list: Row[], ctx: z.RefinementCtx, label: string) {

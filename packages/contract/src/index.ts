@@ -72,6 +72,8 @@ export const contract = {
         })
         .nullable(),
     ),
+    /** 발표별 최근 6개월 명단 (최신순) — 반기별 순위 */
+    history: oc.output(z.array(z.object({ announcement, companies: z.array(rankedCompany) }))),
   },
 
   complex: {

@@ -46,5 +46,5 @@ test("5년 누계 명단 기준: 별칭으로 확정된 회사는 명단에 없�
   expect(m5("한진중공업건설부문")).toEqual({ status: "listed", companyKey: "에이치제이중공업" });
   expect(m5("현대산업개발")).toEqual({ status: "not_listed" }); // 현대건설과 별개 법인
   expect(m5("지에스건설.SK건설")).toEqual({ status: "needs_review", reason: "multiple_builders" });
-  expect(m5("우방")).toEqual({ status: "needs_review", reason: "similar_name" }); // 확인 전
+  expect(m5("우방")).toEqual({ status: "listed", companyKey: "에스엠상선" }); // 2023-h2 각주: 에스엠상선은 ㈜우방 포함
 });
