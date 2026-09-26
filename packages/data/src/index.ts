@@ -1,10 +1,16 @@
 // 순위·별칭은 레포 JSON을 Worker에 번들한다. 단지 데이터는 D1(apps/api/migrations)에 있다.
 import h1_2026 from "../data/announcements/2026-h1.json" with { type: "json" };
 import aliasJson from "../data/builder-aliases.json" with { type: "json" };
+import distinctJson from "../data/builder-distinct.json" with { type: "json" };
 import reviewJson from "../data/builder-review.json" with { type: "json" };
 import sampleJson from "../data/sample-complexes.json" with { type: "json" };
 import { normalizeCompanyName } from "./company.ts";
-import { parseAliases, parseAnnouncement, parseReviewNames } from "./snapshot.ts";
+import {
+  parseAliases,
+  parseAnnouncement,
+  parseDistinctNames,
+  parseReviewNames,
+} from "./snapshot.ts";
 
 export { normalizeCompanyName };
 
@@ -30,6 +36,13 @@ export type ComplexDataset = { generatedAt: string | null; items: Complex[] };
 const announcements = [h1_2026].map(parseAnnouncement);
 const latest = announcements.sort((a, b) => b.publishedOn.localeCompare(a.publishedOn))[0]!;
 
+const toRows = (rows: typeof latest.rows) =>
+  rows.map((r) => ({
+    ...r,
+    note: r.note ?? null,
+    companyKey: normalizeCompanyName(r.companyName),
+  }));
+
 export const ranking = {
   announcement: {
     id: latest.id,
@@ -39,11 +52,15 @@ export const ranking = {
     publishedOn: latest.publishedOn,
     sourceUrl: latest.sourceUrl,
   },
-  rows: latest.rows.map((r) => ({
-    ...r,
-    note: r.note ?? null,
-    companyKey: normalizeCompanyName(r.companyName),
-  })),
+  rows: toRows(latest.rows), // 최근 6개월
+  /** 최근 5년 누계 (같은 발표) */
+  cumulative: latest.cumulative
+    ? {
+        periodStart: latest.cumulative.periodStart,
+        periodEnd: latest.cumulative.periodEnd,
+        rows: toRows(latest.cumulative.rows),
+      }
+    : null,
 };
 
 /** 정규화한 별칭 → 정규화한 발표 회사 키 */
@@ -61,3 +78,12 @@ export const sampleComplexes = sampleJson as ComplexDataset;
 export const reviewNames: ReadonlySet<string> = new Set(
   parseReviewNames(reviewJson).map((r) => normalizeCompanyName(r.name)),
 );
+
+/** 순위 회사와 이름이 비슷하지만 별개 법인으로 확인된 시공사 표기 (정규화). 유사도 검사를 건너뛴다. */
+export const distinctNames: ReadonlySet<string> = new Set(
+  parseDistinctNames(distinctJson).map((r) => normalizeCompanyName(r.name)),
+);
+
+/** 시공사 매칭 규칙 묶음 (apps/api/src/match.ts) */
+export const matchRules = { aliases, reviewNames, distinctNames };
+export type MatchRules = typeof matchRules;

@@ -1,9 +1,10 @@
 import { isDefinedError } from "@orpc/client";
 import { correctionKinds } from "@sunsal/contract/constants";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Prose } from "../components/Prose";
+import { Button, Callout, Field, inputClass, TextLink } from "../components/ui";
 import { dateTime } from "../lib/format";
 import { orpc } from "../lib/orpc";
 import { track } from "../lib/track";
@@ -108,10 +109,12 @@ function Form({ kaptCode, kind: initialKind }: { kaptCode?: string; kind?: Kind 
           대상 단지 코드: <span className="tnum font-semibold">{kaptCode}</span>
         </p>
       )}
-      <div>
-        <label htmlFor="message" className="mb-2 block font-semibold">
-          내용 <span className="font-normal text-ink-3">(10자 이상)</span>
-        </label>
+      <Field
+        id="message"
+        label="내용"
+        optional="10자 이상"
+        hint="근거(공식 자료 링크 등)를 함께 적어 주시면 빨리 확인할 수 있습니다. 동·호수, 전화번호 같은 개인정보는 적지 마세요."
+      >
         <textarea
           id="message"
           required
@@ -121,42 +124,38 @@ function Form({ kaptCode, kind: initialKind }: { kaptCode?: string; kind?: Kind 
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           aria-describedby="message-hint"
-          className="w-full border-2 border-ink bg-paper p-3"
+          className={`${inputClass} py-3`}
         />
-        <p id="message-hint" className="mt-1 text-sm text-ink-3">
-          근거(공식 자료 링크 등)를 함께 적어 주시면 빨리 확인할 수 있습니다. 동·호수, 전화번호 같은
-          개인정보는 적지 마세요.
-        </p>
-      </div>
-      <div>
-        <label htmlFor="contact" className="mb-2 block font-semibold">
-          답변 받을 이메일 <span className="font-normal text-ink-3">(선택)</span>
-        </label>
+      </Field>
+      <Field
+        id="contact"
+        label="답변 받을 이메일"
+        optional="선택"
+        hint={
+          <>
+            처리 결과 안내에만 쓰고, 처리 완료 1년 뒤 삭제합니다.{" "}
+            <TextLink to="/privacy">개인정보처리방침</TextLink>
+          </>
+        }
+      >
         <input
           id="contact"
           type="email"
           maxLength={200}
           value={contact}
           onChange={(e) => setContact(e.target.value)}
-          className="h-12 w-full border-2 border-ink bg-paper px-3"
+          aria-describedby="contact-hint"
+          className={`${inputClass} h-12`}
         />
-        <p className="mt-1 text-sm text-ink-3">
-          처리 결과 안내에만 쓰고, 처리 완료 1년 뒤 삭제합니다.{" "}
-          <Link to="/privacy">개인정보처리방침</Link>
-        </p>
-      </div>
+      </Field>
       {error && (
         <p role="alert" className="text-accent">
           {error}
         </p>
       )}
-      <button
-        type="submit"
-        disabled={submit.isPending}
-        className="inline-flex min-h-12 items-center justify-center self-start bg-ink px-6 font-semibold whitespace-nowrap text-paper hover:bg-accent disabled:opacity-60"
-      >
+      <Button type="submit" disabled={submit.isPending} className="self-start">
         {submit.isPending ? "보내는 중…" : "정정 요청 보내기"}
-      </button>
+      </Button>
     </form>
   );
 }
@@ -166,10 +165,7 @@ function Status({ id }: { id: string }) {
     orpc.correction.get.queryOptions({ input: { id } }),
   );
   return (
-    <section aria-labelledby="status" className="border-l-4 border-ink bg-paper-2 p-5">
-      <h2 id="status" className="!mt-0 !border-0 !pb-0">
-        정정 요청 처리 상태
-      </h2>
+    <Callout tone="neutral" titleId="status" title="정정 요청 처리 상태">
       {isPending && <p className="text-ink-3">불러오는 중…</p>}
       {isError && <p>접수 번호를 찾을 수 없습니다.</p>}
       {data && (
@@ -193,7 +189,7 @@ function Status({ id }: { id: string }) {
       <p className="mt-3 text-sm text-ink-2">
         이 페이지 주소를 저장해 두면 나중에 처리 상태를 다시 확인할 수 있습니다.
       </p>
-    </section>
+    </Callout>
   );
 }
 

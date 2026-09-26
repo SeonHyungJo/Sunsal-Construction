@@ -1,6 +1,6 @@
 import { implement } from "@orpc/server";
 import { contract } from "@sunsal/contract";
-import { aliases, ranking, reviewNames } from "@sunsal/data";
+import { matchRules, ranking } from "@sunsal/data";
 import { matchBuilder } from "./match.ts";
 import { getComplex, hasComplexes, searchComplexes } from "./complexes.ts";
 import { corrections } from "./store.ts";
@@ -15,10 +15,22 @@ type Context = {
 const os = implement(contract).$context<Context>();
 
 const STALE_AFTER_MS = 30 * 24 * 60 * 60 * 1000;
-const rankedKeys = new Set(ranking.rows.map((r) => r.companyKey));
-const byCompanyKey = new Map(ranking.rows.map((r) => [r.companyKey, r]));
+type RankRow = (typeof ranking.rows)[number];
+const index = (rows: RankRow[]) => ({
+  keys: new Set(rows.map((r) => r.companyKey)),
+  byKey: new Map(rows.map((r) => [r.companyKey, r])),
+});
+const recent = index(ranking.rows);
+const cumulative = ranking.cumulative && index(ranking.cumulative.rows);
 
-const toCompany = (r: (typeof ranking.rows)[number]) => ({
+function match(builderRaw: string | null, list: ReturnType<typeof index>) {
+  const m = matchBuilder(builderRaw, list.keys, matchRules);
+  return m.status === "listed"
+    ? { status: "listed" as const, company: toCompany(list.byKey.get(m.companyKey)!) }
+    : m;
+}
+
+const toCompany = (r: RankRow) => ({
   rank: r.rank,
   companyName: r.companyName,
   companyDefectCount: r.defectCount,
@@ -49,6 +61,11 @@ export const router = os.router({
     latest: os.ranking.latest.handler(() => ({
       announcement: ranking.announcement,
       companies: ranking.rows.map(toCompany),
+      cumulative: ranking.cumulative && {
+        periodStart: ranking.cumulative.periodStart,
+        periodEnd: ranking.cumulative.periodEnd,
+        companies: ranking.cumulative.rows.map(toCompany),
+      },
     })),
   },
 
@@ -74,7 +91,6 @@ export const router = os.router({
     result: os.complex.result.handler(async ({ input, context, errors }) => {
       const c = await getComplex(context.env.DB, input.kaptCode);
       if (!c) throw errors.NOT_FOUND();
-      const m = matchBuilder(c.builderRaw, rankedKeys, aliases, reviewNames);
       const syncedAt = c.syncedAt ? new Date(c.syncedAt) : null;
       return {
         complex: {
@@ -85,10 +101,12 @@ export const router = os.router({
           approvalDate: c.approvalDate,
           builderRaw: c.builderRaw,
         },
-        match:
-          m.status === "listed"
-            ? { status: "listed" as const, company: toCompany(byCompanyKey.get(m.companyKey)!) }
-            : m,
+        match: match(c.builderRaw, recent),
+        cumulative: cumulative && {
+          periodStart: ranking.cumulative!.periodStart,
+          periodEnd: ranking.cumulative!.periodEnd,
+          match: match(c.builderRaw, cumulative),
+        },
         announcement: ranking.announcement,
         complexDataSyncedAt: c.syncedAt,
         complexDataStale: !syncedAt || Date.now() - syncedAt.getTime() > STALE_AFTER_MS,

@@ -22,7 +22,9 @@ function Methodology() {
         국토교통부가 반기마다 공개하는 「공동주택 하자 판정 상위 20개 건설사 명단」 중{" "}
         <strong>최근 6개월 하자 판정 건수</strong> 기준 표를 그대로 옮깁니다. 건수는
         하자심사·분쟁조정위원회가 실제 하자로 판정한 <strong>세부 하자수</strong>이며, 판정 사건수는
-        함께 표시합니다. 같은 건수는 같은 순위입니다.
+        함께 표시합니다. 같은 건수는 같은 순위입니다. 같은 발표에 실린{" "}
+        <strong>최근 5년 누계</strong> 상위 20개사 표도 함께 보여줍니다(전체 순위 화면의 탭, 결과
+        화면의 두 번째 항목).
       </p>
       {data && <SourceLine announcement={data.announcement} location="methodology" />}
 

@@ -7,6 +7,7 @@ import {
 } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { Layout } from "../components/Layout";
+import { PageHeader } from "../components/ui";
 import { track } from "../lib/track";
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
@@ -15,16 +16,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   }),
   component: Root,
   errorComponent: () => (
-    <section>
-      <h1 className="text-display font-extrabold">잠시 문제가 생겼습니다</h1>
-      <p className="mt-3 text-ink-2">데이터를 불러오지 못했습니다. 잠시 후 새로고침해 주세요.</p>
-    </section>
+    <PageHeader
+      title="잠시 문제가 생겼습니다"
+      lead="데이터를 불러오지 못했습니다. 잠시 후 새로고침해 주세요."
+    />
   ),
   notFoundComponent: () => (
-    <section>
-      <h1 className="text-display font-extrabold">페이지를 찾을 수 없습니다</h1>
-      <p className="mt-3 text-ink-2">주소가 바뀌었거나 삭제된 페이지입니다.</p>
-    </section>
+    <PageHeader title="페이지를 찾을 수 없습니다" lead="주소가 바뀌었거나 삭제된 페이지입니다." />
   ),
 });
 

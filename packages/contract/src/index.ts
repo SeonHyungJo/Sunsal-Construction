@@ -57,7 +57,21 @@ export const contract = {
   health: oc.output(z.object({ ok: z.literal(true) })),
 
   ranking: {
-    latest: oc.output(z.object({ announcement, companies: z.array(rankedCompany) }).nullable()),
+    latest: oc.output(
+      z
+        .object({
+          announcement,
+          companies: z.array(rankedCompany), // 최근 6개월
+          cumulative: z // 같은 발표의 최근 5년 누계
+            .object({
+              periodStart: z.string(),
+              periodEnd: z.string(),
+              companies: z.array(rankedCompany),
+            })
+            .nullable(),
+        })
+        .nullable(),
+    ),
   },
 
   complex: {
@@ -82,6 +96,10 @@ export const contract = {
           announcement: announcement.nullable(),
           complexDataSyncedAt: z.string().nullable(), // K-apt 기본정보 마지막 수집 시각 (ISO)
           complexDataStale: z.boolean(), // 수집 이력이 없거나 오래됨
+          // 최근 5년 누계 명단 기준 (발표에 누계 표가 없으면 null)
+          cumulative: z
+            .object({ periodStart: z.string(), periodEnd: z.string(), match: builderMatch })
+            .nullable(),
         }),
       ),
   },

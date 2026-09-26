@@ -14,8 +14,18 @@
       "defectCount": 249,
       "note": "집합건물분쟁조정위원회 요청 오피스텔 등 집합건물 통계 포함"
     },
-    { "rank": 2, "companyName": "신동아건설(주)", "caseCount": 63, "defectCount": 120 },
-    { "rank": 3, "companyName": "(주)빌텍종합건설", "caseCount": 58, "defectCount": 66 },
+    {
+      "rank": 2,
+      "companyName": "신동아건설(주)",
+      "caseCount": 63,
+      "defectCount": 120
+    },
+    {
+      "rank": 3,
+      "companyName": "(주)빌텍종합건설",
+      "caseCount": 58,
+      "defectCount": 66
+    },
     {
       "rank": 4,
       "companyName": "(주)라인",
@@ -23,8 +33,18 @@
       "defectCount": 56,
       "note": "㈜라인건설을 포함한 자료임"
     },
-    { "rank": 5, "companyName": "에스지건설(주)", "caseCount": 26, "defectCount": 55 },
-    { "rank": 6, "companyName": "제일건설(주)", "caseCount": 17, "defectCount": 41 },
+    {
+      "rank": 5,
+      "companyName": "에스지건설(주)",
+      "caseCount": 26,
+      "defectCount": 55
+    },
+    {
+      "rank": 6,
+      "companyName": "제일건설(주)",
+      "caseCount": 17,
+      "defectCount": 41
+    },
     {
       "rank": 7,
       "companyName": "(주)정우종합건설",
@@ -32,16 +52,66 @@
       "defectCount": 40,
       "note": "㈜솔을 포함한 자료임"
     },
-    { "rank": 7, "companyName": "(주)엘로이종합건설", "caseCount": 36, "defectCount": 40 },
-    { "rank": 9, "companyName": "동부건설(주)", "caseCount": 25, "defectCount": 38 },
-    { "rank": 10, "companyName": "진흥기업(주)", "caseCount": 7, "defectCount": 35 },
-    { "rank": 11, "companyName": "(주)대명수안", "caseCount": 5, "defectCount": 33 },
-    { "rank": 12, "companyName": "대우조선해양건설(주)", "caseCount": 6, "defectCount": 23 },
-    { "rank": 13, "companyName": "(주)동원개발", "caseCount": 6, "defectCount": 17 },
-    { "rank": 13, "companyName": "(주)대우건설", "caseCount": 5, "defectCount": 17 },
-    { "rank": 15, "companyName": "범양건영(주)", "caseCount": 11, "defectCount": 16 },
-    { "rank": 16, "companyName": "대라수건설(주)", "caseCount": 2, "defectCount": 14 },
-    { "rank": 16, "companyName": "일성건설(주)", "caseCount": 2, "defectCount": 14 },
+    {
+      "rank": 7,
+      "companyName": "(주)엘로이종합건설",
+      "caseCount": 36,
+      "defectCount": 40
+    },
+    {
+      "rank": 9,
+      "companyName": "동부건설(주)",
+      "caseCount": 25,
+      "defectCount": 38
+    },
+    {
+      "rank": 10,
+      "companyName": "진흥기업(주)",
+      "caseCount": 7,
+      "defectCount": 35
+    },
+    {
+      "rank": 11,
+      "companyName": "(주)대명수안",
+      "caseCount": 5,
+      "defectCount": 33
+    },
+    {
+      "rank": 12,
+      "companyName": "대우조선해양건설(주)",
+      "caseCount": 6,
+      "defectCount": 23
+    },
+    {
+      "rank": 13,
+      "companyName": "(주)동원개발",
+      "caseCount": 6,
+      "defectCount": 17
+    },
+    {
+      "rank": 13,
+      "companyName": "(주)대우건설",
+      "caseCount": 5,
+      "defectCount": 17
+    },
+    {
+      "rank": 15,
+      "companyName": "범양건영(주)",
+      "caseCount": 11,
+      "defectCount": 16
+    },
+    {
+      "rank": 16,
+      "companyName": "대라수건설(주)",
+      "caseCount": 2,
+      "defectCount": 14
+    },
+    {
+      "rank": 16,
+      "companyName": "일성건설(주)",
+      "caseCount": 2,
+      "defectCount": 14
+    },
     {
       "rank": 16,
       "companyName": "에이치엘디앤아이한라(주)",
@@ -49,7 +119,12 @@
       "defectCount": 14,
       "note": "㈜한라를 포함한 자료임"
     },
-    { "rank": 16, "companyName": "두산건설(주)", "caseCount": 3, "defectCount": 14 },
+    {
+      "rank": 16,
+      "companyName": "두산건설(주)",
+      "caseCount": 3,
+      "defectCount": 14
+    },
     {
       "rank": 20,
       "companyName": "금호건설(주)",
@@ -57,5 +132,136 @@
       "defectCount": 13,
       "note": "금호산업㈜을 포함한 자료임"
     }
-  ]
+  ],
+  "cumulative": {
+    "periodStart": "2021-03-01",
+    "periodEnd": "2026-02-28",
+    "sourceTable": "참고2 하자판정 건수 상위 20개사 하자 현황 · 5년간('21.3.~'26.2.)",
+    "rows": [
+      {
+        "rank": 1,
+        "companyName": "(주)순영종합건설",
+        "caseCount": 382,
+        "defectCount": 383,
+        "note": "집합건물분쟁조정위원회 요청 오피스텔 등 집합건물 통계 포함"
+      },
+      {
+        "rank": 2,
+        "companyName": "(주)대명종합건설",
+        "caseCount": 48,
+        "defectCount": 318
+      },
+      {
+        "rank": 3,
+        "companyName": "에스엠상선(주)",
+        "caseCount": 183,
+        "defectCount": 311,
+        "note": "우방건설산업을 포함한 자료임"
+      },
+      {
+        "rank": 4,
+        "companyName": "제일건설(주)",
+        "caseCount": 150,
+        "defectCount": 299
+      },
+      {
+        "rank": 5,
+        "companyName": "(주)대우건설",
+        "caseCount": 101,
+        "defectCount": 293
+      },
+      {
+        "rank": 6,
+        "companyName": "(주)지향종합건설",
+        "caseCount": 76,
+        "defectCount": 269
+      },
+      {
+        "rank": 7,
+        "companyName": "현대엔지니어링(주)",
+        "caseCount": 55,
+        "defectCount": 252
+      },
+      {
+        "rank": 8,
+        "companyName": "(주)대송",
+        "caseCount": 242,
+        "defectCount": 247
+      },
+      {
+        "rank": 9,
+        "companyName": "지에스건설(주)",
+        "caseCount": 71,
+        "defectCount": 237
+      },
+      {
+        "rank": 10,
+        "companyName": "현대건설(주)",
+        "caseCount": 70,
+        "defectCount": 214
+      },
+      {
+        "rank": 11,
+        "companyName": "(주)에이치제이중공업",
+        "caseCount": 45,
+        "defectCount": 190,
+        "note": "(주)한진중공업을 포함한 자료임"
+      },
+      {
+        "rank": 12,
+        "companyName": "(유)신호건설산업",
+        "caseCount": 93,
+        "defectCount": 180
+      },
+      {
+        "rank": 13,
+        "companyName": "(주)백운종합건설",
+        "caseCount": 72,
+        "defectCount": 178
+      },
+      {
+        "rank": 14,
+        "companyName": "신동아건설(주)",
+        "caseCount": 88,
+        "defectCount": 173
+      },
+      {
+        "rank": 15,
+        "companyName": "우미건설(주)",
+        "caseCount": 48,
+        "defectCount": 172
+      },
+      {
+        "rank": 16,
+        "companyName": "지브이종합건설",
+        "caseCount": 23,
+        "defectCount": 167
+      },
+      {
+        "rank": 17,
+        "companyName": "(주)한화",
+        "caseCount": 40,
+        "defectCount": 165,
+        "note": "㈜한화건설을 포함한 자료임"
+      },
+      {
+        "rank": 18,
+        "companyName": "롯데건설(주)",
+        "caseCount": 61,
+        "defectCount": 155
+      },
+      {
+        "rank": 19,
+        "companyName": "삼부토건(주)",
+        "caseCount": 60,
+        "defectCount": 154
+      },
+      {
+        "rank": 20,
+        "companyName": "동연종합건설(주)",
+        "caseCount": 57,
+        "defectCount": 143
+      }
+    ]
+  }
 }
