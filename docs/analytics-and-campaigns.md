@@ -22,15 +22,19 @@
 
 일간 Telegram 리포트(`apps/api/src/google.ts`)는 `address_search_start`, `complex_selected`, `result_view`와 `sessionDefaultChannelGroup`(Organic/Paid Social), `sessionCampaignName`을 읽는다.
 
-## GTM 컨테이너 설정 (계정 연결 시)
+## GTM·GA4 설정 (운영 연결 완료)
 
-1. **Google 태그**: GA4 측정 ID, `send_page_view: false` (앱이 `page_view`를 직접 보낸다). 트리거: Initialization - All Pages.
-2. **데이터 영역 변수**: `page_path`, `location`, `candidate_count`, `match_status`, `reason`, `method`, `kind`.
-3. **GA4 이벤트 태그 — page_view**: 이벤트 이름 `page_view`, `page_location` = `{{Page URL}}`, `page_path` = `{{DLV - page_path}}`. 트리거: 맞춤 이벤트 `page_view`.
-4. **GA4 이벤트 태그 — 서비스 이벤트**: 이벤트 이름 `{{Event}}`, 위 변수들을 파라미터로 전달. 트리거: 맞춤 이벤트, 정규식 `^(address_search_start|complex_selected|result_view|builder_match_failed|ranking_expand|source_open|correction_submit|share)$`.
-5. GA4 관리 → 맞춤 정의: `match_status`, `reason`, `location`, `method`, `kind`(측정기준), `candidate_count`(측정항목).
-6. GA4 관리 → 데이터 설정 → 데이터 수집: Google 신호는 끄고, 개인정보 보호 설정에서 세분화된 위치·기기 데이터 수집을 끈다.
-7. 배포 환경변수 `VITE_GTM_ID=GTM-XXXXXXX` 설정 후 재빌드 → GA4 DebugView(또는 GTM 미리보기)에서 위 이벤트 확인.
+| 항목         | 값                                                                                 |
+| ------------ | ---------------------------------------------------------------------------------- |
+| GTM 컨테이너 | `GTM-WKBFBCB3` (sunsal.duruit.com, partner@duruit.com의 duruit 계정) — 버전 2 게시 |
+| GA4 속성     | `556065304` 순살시공, 웹 스트림 측정 ID `G-B5BZ9YBS0F`                             |
+| 빌드 변수    | `apps/web/.env.production`의 `VITE_GTM_ID`                                         |
+
+- 컨테이너 구성의 기준은 **`docs/gtm/sunsal-container.json`** 이다. 태그·트리거를 바꿀 때는 이 파일을 고친 뒤 GTM 관리 → 컨테이너 가져오기(병합, 충돌 덮어쓰기) → 게시한다.
+  - Google 태그(`send_page_view: false` — 앱이 page_view를 직접 보냄), `GA4 - page_view`, `GA4 - 서비스 이벤트`(위 표의 이벤트, 정규식 트리거), 데이터 영역 변수 7개
+- GA4 맞춤 측정기준(이벤트): `match_status`, `reason`, `location`, `method`, `kind` / 맞춤 측정항목: `candidate_count`
+- Google 신호 꺼짐, 세분화된 위치·기기 데이터 수집 꺼짐
+- 검증(2026-09-26): 운영에서 GA4 hit 확인 — 이벤트 전송, UTM 캠페인 인식, 검색어·동호수 미포함. GA4 실시간 보고서에 서비스 이벤트 표시
 
 ## UTM 규칙
 
