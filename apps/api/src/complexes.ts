@@ -94,3 +94,44 @@ export async function searchComplexes(db: D1Database, query: string, limit = 10)
   }
   return createSearch(rows.map(toComplex))(query, limit);
 }
+
+/** 이 이름들로 시공한 단지, 사용승인일 최신순 (날짜 없는 단지는 뒤로) */
+export async function builderComplexes(
+  db: D1Database,
+  names: readonly string[],
+  limit: number,
+  offset: number,
+) {
+  const inList = names.map(() => "?").join(", ");
+  const [total, rows] = await Promise.all([
+    db
+      .prepare(
+        `SELECT count(DISTINCT kapt_code) AS n FROM complex_builders WHERE name IN (${inList})`,
+      )
+      .bind(...names)
+      .first<{ n: number }>(),
+    db
+      .prepare(
+        `SELECT DISTINCT ${COLUMNS} FROM complex_builders b JOIN complexes c ON c.kapt_code = b.kapt_code
+         WHERE b.name IN (${inList})
+         ORDER BY c.approval_date IS NULL, c.approval_date DESC, c.name LIMIT ? OFFSET ?`,
+      )
+      .bind(...names, limit, offset)
+      .all<Row>(),
+  ]);
+  return { total: total?.n ?? 0, items: rows.results.map(toComplex) };
+}
+
+/**
+ * 시공사 이름 부분 일치. 이름별 단지 수를 돌려주고, 별칭 묶기는 호출하는 쪽에서 한다.
+ * ponytail: LIKE 전체 탐색(수만 행). 느려지면 complex_builders에 trigram FTS를 붙인다.
+ */
+export async function searchBuilderNames(db: D1Database, normalized: string) {
+  const { results } = await db
+    .prepare(
+      "SELECT name, count(*) AS n FROM complex_builders WHERE name LIKE ? GROUP BY name ORDER BY n DESC LIMIT 50",
+    )
+    .bind(`%${normalized.replaceAll(/[%_]/g, "")}%`)
+    .all<{ name: string; n: number }>();
+  return results;
+}

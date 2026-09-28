@@ -1,5 +1,6 @@
 // K-apt → D1 동기화 (Worker cron). 호출 제한에 걸리면 그 회차를 멈추고 다음 회차가 이어간다.
 import { searchText } from "@sunsal/data";
+import { builderNames } from "./builders.ts";
 import { fetchBasis, fetchListPage, ThrottledError } from "./kapt.ts";
 
 const now = () => new Date().toISOString();
@@ -79,6 +80,12 @@ export async function syncBasis(db: D1Database, key: string, batch = 20) {
             at,
             searchText({ ...b, name }),
           ),
+        db.prepare("DELETE FROM complex_builders WHERE kapt_code = ?").bind(c.kapt_code),
+        ...builderNames(b.builderRaw).map((n) =>
+          db
+            .prepare("INSERT INTO complex_builders (name, kapt_code) VALUES (?, ?)")
+            .bind(n, c.kapt_code),
+        ),
       );
       ok++;
     } catch (e) {

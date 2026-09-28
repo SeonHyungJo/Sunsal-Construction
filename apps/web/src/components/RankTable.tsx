@@ -1,4 +1,5 @@
 import type { Client } from "@sunsal/contract";
+import { Link } from "@tanstack/react-router";
 import { num } from "../lib/format";
 
 type Company = NonNullable<Awaited<ReturnType<Client["ranking"]["latest"]>>>["companies"][number];
@@ -36,7 +37,13 @@ export function RankTable({ companies, caption }: { companies: Company[]; captio
               <span className="sr-only">위</span>
             </td>
             <th scope="row" className="font-semibold md:py-3 md:pr-3">
-              {c.companyName}
+              <Link
+                to="/builder/$key"
+                params={{ key: c.companyKey }}
+                className="underline decoration-rule underline-offset-4 hover:decoration-ink"
+              >
+                {c.companyName}
+              </Link>
               {c.note && <span className="block text-xs font-normal text-ink-3">{c.note}</span>}
             </th>
             <td className="tnum text-right md:py-3 md:pr-3">

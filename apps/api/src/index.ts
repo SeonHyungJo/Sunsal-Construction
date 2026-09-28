@@ -1,5 +1,6 @@
 import { onError } from "@orpc/server";
 import { RPCHandler } from "@orpc/server/fetch";
+import { ranking } from "@sunsal/data";
 import { Hono } from "hono";
 import { sendDailyReport } from "./report.ts";
 import { router } from "./router.ts";
@@ -29,6 +30,7 @@ const PUBLIC_PATHS = [
   "/",
   "/ranking",
   "/search",
+  "/builders",
   "/methodology",
   "/checklist",
   "/corrections",
@@ -43,7 +45,12 @@ app.get("/robots.txt", (c) => {
 
 app.get("/sitemap.xml", (c) => {
   const origin = new URL(c.req.url).origin;
-  const urls = PUBLIC_PATHS.map((p) => `<url><loc>${origin}${p}</loc></url>`).join("");
+  const builders = [
+    ...new Set([...ranking.rows, ...(ranking.cumulative?.rows ?? [])].map((r) => r.companyKey)),
+  ];
+  const urls = [...PUBLIC_PATHS, ...builders.map((k) => `/builder/${encodeURIComponent(k)}`)]
+    .map((p) => `<url><loc>${origin}${p}</loc></url>`)
+    .join("");
   return c.body(
     `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls}</urlset>`,
     200,

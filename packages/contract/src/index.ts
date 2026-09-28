@@ -16,6 +16,7 @@ const announcement = z.object({
 /** 발표 원문의 회사 단위 수치. 특정 단지의 하자 건수가 아니다. */
 const rankedCompany = z.object({
   rank: z.number(),
+  companyKey: z.string(), // 건설사 페이지 키 (/builder/$key)
   companyName: z.string(),
   companyDefectCount: z.number(), // 집계 기간 내 회사 전체 하자판정 세부 하자수
   companyCaseCount: z.number(), // 집계 기간 내 회사 전체 하자판정 사건수
@@ -29,6 +30,10 @@ const complexSummary = z.object({
   legalAddress: z.string().nullable(),
   approvalDate: z.string().nullable(),
 });
+
+/** 건설사 페이지 링크. key는 정규화한 이름(별칭이면 발표 회사 키) */
+const builderRef = z.object({ key: z.string(), name: z.string() });
+const builderKey = z.string().trim().min(2).max(60);
 
 export const builderMatch = z.discriminatedUnion("status", [
   z.object({ status: z.literal("listed"), company: rankedCompany }),
@@ -94,6 +99,7 @@ export const contract = {
       .output(
         z.object({
           complex: complexSummary.extend({ builderRaw: z.string().nullable() }),
+          builders: z.array(builderRef), // 시공사 원문에서 찾은 회사 (공동시공이면 여럿)
           match: builderMatch,
           announcement: announcement.nullable(),
           complexDataSyncedAt: z.string().nullable(), // K-apt 기본정보 마지막 수집 시각 (ISO)
@@ -102,6 +108,40 @@ export const contract = {
           cumulative: z
             .object({ periodStart: z.string(), periodEnd: z.string(), match: builderMatch })
             .nullable(),
+        }),
+      ),
+  },
+
+  builder: {
+    search: oc
+      .input(z.object({ q: z.string().max(60) }))
+      .errors({ RATE_LIMITED: { status: 429 } })
+      .output(
+        z.array(
+          builderRef.extend({
+            complexCount: z.number(), // 수집된 단지 중 시공 단지 수
+            rank: z.number().nullable(), // 최근 6개월 순위
+          }),
+        ),
+      ),
+
+    get: oc
+      .input(z.object({ key: builderKey, page: z.number().int().min(1).max(500).default(1) }))
+      .errors({ NOT_FOUND: { status: 404 } })
+      .output(
+        builderRef.extend({
+          announcement: announcement.nullable(),
+          recent: rankedCompany.nullable(), // 최근 6개월 명단 (없으면 null)
+          cumulative: z
+            .object({
+              periodStart: z.string(),
+              periodEnd: z.string(),
+              company: rankedCompany.nullable(),
+            })
+            .nullable(),
+          total: z.number(), // 시공 단지 수 (수집된 단지 기준)
+          pageSize: z.number(),
+          complexes: z.array(complexSummary.extend({ joint: z.boolean() })), // 사용승인일 최신순
         }),
       ),
   },

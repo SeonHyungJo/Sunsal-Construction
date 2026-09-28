@@ -88,6 +88,18 @@ function ResultPage() {
               <dt className="text-ink-3">시공사(단지 정보 원문)</dt>
               <dd className="font-semibold">{c.builderRaw ?? "정보 없음"}</dd>
             </div>
+            {data.builders.length > 0 && (
+              <div className="flex gap-2">
+                <dt className="text-ink-3">건설사별 시공 단지</dt>
+                <dd className="flex flex-wrap gap-x-3">
+                  {data.builders.map((b) => (
+                    <TextLink key={b.key} to="/builder/$key" params={{ key: b.key }}>
+                      {b.name}
+                    </TextLink>
+                  ))}
+                </dd>
+              </div>
+            )}
           </dl>
         </PageHeader>
       </div>
@@ -178,6 +190,7 @@ function ResultPage() {
             </ul>
             <ShareButton title={`${c.name} 시공사 확인 · 순살시공`} />
           </section>
+          <AdSlot slot={import.meta.env.VITE_ADSENSE_SLOT_RESULT} />
         </aside>
       </div>
     </article>
@@ -208,7 +221,13 @@ function MatchBlock({
           titleId={titleId}
           title={heading("공개된 상위 20개사 명단에 있습니다")}
         >
-          <p className="text-lg font-semibold text-ink">{match.company.companyName}</p>
+          <TextLink
+            to="/builder/$key"
+            params={{ key: match.company.companyKey }}
+            className="text-lg font-semibold text-ink"
+          >
+            {match.company.companyName}
+          </TextLink>
           <p className="tnum mt-1 flex flex-wrap items-baseline gap-x-4 text-ink">
             <span
               className={

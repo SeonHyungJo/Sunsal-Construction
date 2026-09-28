@@ -1,8 +1,15 @@
 import { implement } from "@orpc/server";
 import { contract } from "@sunsal/contract";
-import { history, matchRules, ranking } from "@sunsal/data";
+import { history, matchRules, normalizeCompanyName, ranking } from "@sunsal/data";
 import { matchBuilder } from "./match.ts";
-import { getComplex, hasComplexes, searchComplexes } from "./complexes.ts";
+import { builderKey, builderNames, namesForKey } from "./builders.ts";
+import {
+  builderComplexes,
+  getComplex,
+  hasComplexes,
+  searchBuilderNames,
+  searchComplexes,
+} from "./complexes.ts";
 import { corrections } from "./store.ts";
 import { sendTelegram } from "./telegram.ts";
 
@@ -32,6 +39,7 @@ function match(builderRaw: string | null, list: ReturnType<typeof index>) {
 
 const toCompany = (r: RankRow) => ({
   rank: r.rank,
+  companyKey: r.companyKey,
   companyName: r.companyName,
   companyDefectCount: r.defectCount,
   companyCaseCount: r.caseCount,
@@ -47,6 +55,19 @@ export function normalizeQuery(q: string) {
     .replace(/\s+/g, " ")
     .trim();
 }
+
+/** 건설사 표시 이름: 명단에 있으면 발표 원문 표기, 아니면 정규화한 이름 */
+const builderName = (key: string) =>
+  recent.byKey.get(key)?.companyName ?? cumulative?.byKey.get(key)?.companyName ?? key;
+const builderRefs = (builderRaw: string | null) => [
+  ...new Map(
+    builderNames(builderRaw).map((n) => {
+      const key = builderKey(n);
+      return [key, { key, name: builderName(key) }];
+    }),
+  ).values(),
+];
+const BUILDER_PAGE_SIZE = 30;
 
 async function isAdmin({ env, authorization }: Context) {
   if (!env.ADMIN_TOKEN || !authorization) return false;
@@ -105,6 +126,7 @@ export const router = os.router({
           approvalDate: c.approvalDate,
           builderRaw: c.builderRaw,
         },
+        builders: builderRefs(c.builderRaw),
         match: match(c.builderRaw, recent),
         cumulative: cumulative && {
           periodStart: ranking.cumulative!.periodStart,
@@ -114,6 +136,63 @@ export const router = os.router({
         announcement: ranking.announcement,
         complexDataSyncedAt: c.syncedAt,
         complexDataStale: !syncedAt || Date.now() - syncedAt.getTime() > STALE_AFTER_MS,
+      };
+    }),
+  },
+
+  builder: {
+    search: os.builder.search.handler(async ({ input, context, errors }) => {
+      const q = normalizeCompanyName(input.q);
+      if (q.length < 2) return [];
+      if (!(await context.env.SEARCH_LIMITER.limit({ key: context.ip })).success)
+        throw errors.RATE_LIMITED();
+      const counts = new Map<string, number>();
+      for (const r of await searchBuilderNames(context.env.DB, q)) {
+        const key = builderKey(r.name);
+        counts.set(key, (counts.get(key) ?? 0) + r.n);
+      }
+      return [...counts]
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 10)
+        .map(([key, complexCount]) => ({
+          key,
+          name: builderName(key),
+          complexCount,
+          rank: recent.byKey.get(key)?.rank ?? null,
+        }));
+    }),
+
+    get: os.builder.get.handler(async ({ input, context, errors }) => {
+      const key = normalizeCompanyName(input.key);
+      const { total, items } = await builderComplexes(
+        context.env.DB,
+        namesForKey(key),
+        BUILDER_PAGE_SIZE,
+        (input.page - 1) * BUILDER_PAGE_SIZE,
+      );
+      const r = recent.byKey.get(key);
+      const cr = cumulative?.byKey.get(key);
+      if (!total && !r && !cr) throw errors.NOT_FOUND();
+      return {
+        key,
+        name: builderName(key),
+        announcement: ranking.announcement,
+        recent: r ? toCompany(r) : null,
+        cumulative: ranking.cumulative && {
+          periodStart: ranking.cumulative.periodStart,
+          periodEnd: ranking.cumulative.periodEnd,
+          company: cr ? toCompany(cr) : null,
+        },
+        total,
+        pageSize: BUILDER_PAGE_SIZE,
+        complexes: items.map((c) => ({
+          kaptCode: c.kaptCode,
+          name: c.name,
+          roadAddress: c.roadAddress,
+          legalAddress: c.legalAddress,
+          approvalDate: c.approvalDate,
+          joint: builderNames(c.builderRaw).length > 1,
+        })),
       };
     }),
   },

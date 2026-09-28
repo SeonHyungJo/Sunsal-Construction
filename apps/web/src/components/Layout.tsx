@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 const nav = [
   { to: "/ranking", label: "전체 순위" },
   { to: "/search", label: "주소 검색" },
+  { to: "/builders", label: "건설사 검색" },
   { to: "/methodology", label: "기준·출처" },
 ] as const;
 

@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
-import { getComplex, searchComplexes } from "./complexes.ts";
+import { builderComplexes, getComplex, searchComplexes } from "./complexes.ts";
 import { throttle } from "./kapt.ts";
 import { syncBasis, syncList } from "./sync.ts";
 import { testD1 } from "./test-d1.ts";
@@ -51,6 +51,7 @@ test("목록 → 기본정보 수집, 검색 색인 갱신", async () => {
     approvalDate: "2020-01-01",
   });
   expect((await searchComplexes(db, "테스트로 T2")).map((c) => c.kaptCode)).toEqual(["T2"]);
+  expect((await builderComplexes(db, ["라인건설"], 10, 0)).total).toBe(2);
 
   // 기본정보를 받은 단지는 목록 재수집이 이름을 덮어쓰지 않는다
   vi.stubGlobal("fetch", async () =>

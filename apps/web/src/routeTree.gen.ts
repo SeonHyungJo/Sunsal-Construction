@@ -10,17 +10,24 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as BuildersRouteImport } from './routes/builders'
 import { Route as ChecklistRouteImport } from './routes/checklist'
 import { Route as CorrectionsRouteImport } from './routes/corrections'
 import { Route as MethodologyRouteImport } from './routes/methodology'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as RankingRouteImport } from './routes/ranking'
 import { Route as SearchRouteImport } from './routes/search'
+import { Route as BuilderKeyRouteImport } from './routes/builder.$key'
 import { Route as ComplexKaptCodeRouteImport } from './routes/complex.$kaptCode'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BuildersRoute = BuildersRouteImport.update({
+  id: '/builders',
+  path: '/builders',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ChecklistRoute = ChecklistRouteImport.update({
@@ -53,6 +60,11 @@ const SearchRoute = SearchRouteImport.update({
   path: '/search',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BuilderKeyRoute = BuilderKeyRouteImport.update({
+  id: '/builder/$key',
+  path: '/builder/$key',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ComplexKaptCodeRoute = ComplexKaptCodeRouteImport.update({
   id: '/complex/$kaptCode',
   path: '/complex/$kaptCode',
@@ -61,76 +73,90 @@ const ComplexKaptCodeRoute = ComplexKaptCodeRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/builders': typeof BuildersRoute
   '/checklist': typeof ChecklistRoute
   '/corrections': typeof CorrectionsRoute
   '/methodology': typeof MethodologyRoute
   '/privacy': typeof PrivacyRoute
   '/ranking': typeof RankingRoute
   '/search': typeof SearchRoute
+  '/builder/$key': typeof BuilderKeyRoute
   '/complex/$kaptCode': typeof ComplexKaptCodeRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/builders': typeof BuildersRoute
   '/checklist': typeof ChecklistRoute
   '/corrections': typeof CorrectionsRoute
   '/methodology': typeof MethodologyRoute
   '/privacy': typeof PrivacyRoute
   '/ranking': typeof RankingRoute
   '/search': typeof SearchRoute
+  '/builder/$key': typeof BuilderKeyRoute
   '/complex/$kaptCode': typeof ComplexKaptCodeRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/builders': typeof BuildersRoute
   '/checklist': typeof ChecklistRoute
   '/corrections': typeof CorrectionsRoute
   '/methodology': typeof MethodologyRoute
   '/privacy': typeof PrivacyRoute
   '/ranking': typeof RankingRoute
   '/search': typeof SearchRoute
+  '/builder/$key': typeof BuilderKeyRoute
   '/complex/$kaptCode': typeof ComplexKaptCodeRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/builders'
     | '/checklist'
     | '/corrections'
     | '/methodology'
     | '/privacy'
     | '/ranking'
     | '/search'
+    | '/builder/$key'
     | '/complex/$kaptCode'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/builders'
     | '/checklist'
     | '/corrections'
     | '/methodology'
     | '/privacy'
     | '/ranking'
     | '/search'
+    | '/builder/$key'
     | '/complex/$kaptCode'
   id:
     | '__root__'
     | '/'
+    | '/builders'
     | '/checklist'
     | '/corrections'
     | '/methodology'
     | '/privacy'
     | '/ranking'
     | '/search'
+    | '/builder/$key'
     | '/complex/$kaptCode'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  BuildersRoute: typeof BuildersRoute
   ChecklistRoute: typeof ChecklistRoute
   CorrectionsRoute: typeof CorrectionsRoute
   MethodologyRoute: typeof MethodologyRoute
   PrivacyRoute: typeof PrivacyRoute
   RankingRoute: typeof RankingRoute
   SearchRoute: typeof SearchRoute
+  BuilderKeyRoute: typeof BuilderKeyRoute
   ComplexKaptCodeRoute: typeof ComplexKaptCodeRoute
 }
 
@@ -141,6 +167,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/builders': {
+      id: '/builders'
+      path: '/builders'
+      fullPath: '/builders'
+      preLoaderRoute: typeof BuildersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/checklist': {
@@ -185,6 +218,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SearchRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/builder/$key': {
+      id: '/builder/$key'
+      path: '/builder/$key'
+      fullPath: '/builder/$key'
+      preLoaderRoute: typeof BuilderKeyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/complex/$kaptCode': {
       id: '/complex/$kaptCode'
       path: '/complex/$kaptCode'
@@ -197,12 +237,14 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  BuildersRoute: BuildersRoute,
   ChecklistRoute: ChecklistRoute,
   CorrectionsRoute: CorrectionsRoute,
   MethodologyRoute: MethodologyRoute,
   PrivacyRoute: PrivacyRoute,
   RankingRoute: RankingRoute,
   SearchRoute: SearchRoute,
+  BuilderKeyRoute: BuilderKeyRoute,
   ComplexKaptCodeRoute: ComplexKaptCodeRoute,
 }
 export const routeTree = rootRouteImport
