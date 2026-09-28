@@ -43,6 +43,7 @@ export function normalizeQuery(q: string) {
   return q
     .normalize("NFKC")
     .replace(/\d+\s*동\s*\d+\s*호|\d+\s*호/g, " ")
+    .replace(/아파트/g, " ") // 단지명 대부분에 "아파트"가 없다 (은마아파트 → 은마)
     .replace(/\s+/g, " ")
     .trim();
 }

@@ -1,6 +1,8 @@
 import { sampleComplexes, searchText } from "@sunsal/data";
 import { beforeAll, expect, test } from "vitest";
 import { getComplex, hasComplexes, searchComplexes } from "./complexes.ts";
+import { normalizeQuery } from "./router.ts";
+import { createSearch } from "./search.ts";
 import { testD1 } from "./test-d1.ts";
 
 const db = testD1();
@@ -56,4 +58,12 @@ test("단건 조회·존재 여부", async () => {
   expect(await getComplex(db, "A00000000")).toBeNull();
   expect(await hasComplexes(db)).toBe(true);
   expect(await hasComplexes(testD1())).toBe(false);
+});
+
+test('검색어의 "아파트"는 빼고, 순위도 단지명에서 뺀 이름으로 비교', async () => {
+  expect(await codes(normalizeQuery("라인캐슬아파트"))).toEqual(["A90000001"]);
+  expect(normalizeQuery("아파트")).toBe("");
+  const c = (kaptCode: string, name: string) => ({ ...sampleComplexes.items[0]!, kaptCode, name });
+  const search = createSearch([c("B", "형제타운"), c("A", "형제아파트")]);
+  expect(search(normalizeQuery("형제아파트")).map((x) => x.kaptCode)).toEqual(["A", "B"]);
 });

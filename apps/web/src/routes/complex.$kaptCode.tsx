@@ -95,20 +95,34 @@ function ResultPage() {
       <div className="mt-6 grid gap-8 md:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
         <div className="flex flex-col gap-4">
           {/* 2. 핵심 결과(최근 6개월) + 3. 해석 */}
-          <MatchBlock
-            match={match}
-            period={a ? `${month(a.periodStart)}~${month(a.periodEnd)}` : "최근 6개월"}
-            label="최근 6개월"
-            collected={collected}
-            primary
-          />
-          {data.cumulative && (
-            <MatchBlock
-              match={data.cumulative.match}
-              period={`${month(data.cumulative.periodStart)}~${month(data.cumulative.periodEnd)}`}
-              label="최근 5년 누계"
-              collected={collected}
-            />
+          {match.status === "not_listed" && data.cumulative?.match.status === "not_listed" ? (
+            <Callout
+              tone="neutral"
+              titleId="result-not-listed"
+              title="최근 6개월 · 최근 5년 누계 모두 상위 20개사 명단에 없습니다"
+            >
+              {`집계 기간: 최근 6개월(${a ? `${month(a.periodStart)}~${month(a.periodEnd)}` : "-"}) · 최근 5년 누계(${month(data.cumulative.periodStart)}~${month(data.cumulative.periodEnd)}). `}
+              국토교통부는 하자 판정 건수 상위 20개사만 공개합니다. 명단에 없다는 것은 하자가 없거나
+              안전하다는 뜻이 아니며, 21위 이하의 순위는 알 수 없습니다.
+            </Callout>
+          ) : (
+            <>
+              <MatchBlock
+                match={match}
+                period={a ? `${month(a.periodStart)}~${month(a.periodEnd)}` : "최근 6개월"}
+                label="최근 6개월"
+                collected={collected}
+                primary
+              />
+              {data.cumulative && (
+                <MatchBlock
+                  match={data.cumulative.match}
+                  period={`${month(data.cumulative.periodStart)}~${month(data.cumulative.periodEnd)}`}
+                  label="최근 5년 누계"
+                  collected={collected}
+                />
+              )}
+            </>
           )}
           <DataFreshness data={data} />
           <AdSlot slot={import.meta.env.VITE_ADSENSE_SLOT_RESULT} />

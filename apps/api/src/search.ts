@@ -35,7 +35,7 @@ function topK<T>(items: T[], k: number, cmp: (a: T, b: T) => number) {
  */
 export function createSearch(items: readonly Complex[]) {
   const index = items.map((c) => {
-    const name = norm(c.name);
+    const name = norm(c.name).replaceAll("아파트", ""); // 검색어에서도 뺀다 (normalizeQuery)
     return {
       c,
       name,
