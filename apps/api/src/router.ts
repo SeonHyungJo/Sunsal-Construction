@@ -29,6 +29,20 @@ const index = (rows: RankRow[]) => ({
 });
 const recent = index(ranking.rows);
 const cumulative = ranking.cumulative && index(ranking.cumulative.rows);
+const past = history.map((h) => ({ ...h.announcement, list: index(h.rows) })).reverse(); // 오래된 순
+
+/** 사용승인 후 2년과 판정 기간이 겹치는 발표. 하자 분쟁은 입주 초기(마감 하자 담보책임 2년)에 몰린다. */
+export function afterApproval(builderRaw: string | null, approvalDate: string | null) {
+  if (!approvalDate) return [];
+  const until = `${Number(approvalDate.slice(0, 4)) + 2}${approvalDate.slice(4)}`;
+  return past
+    .filter((a) => a.periodEnd >= approvalDate && a.periodStart <= until)
+    .map((a) => ({
+      periodStart: a.periodStart,
+      periodEnd: a.periodEnd,
+      match: match(builderRaw, a.list),
+    }));
+}
 
 function match(builderRaw: string | null, list: ReturnType<typeof index>) {
   const m = matchBuilder(builderRaw, list.keys, matchRules);
@@ -133,6 +147,7 @@ export const router = os.router({
           periodEnd: ranking.cumulative!.periodEnd,
           match: match(c.builderRaw, cumulative),
         },
+        afterApproval: afterApproval(c.builderRaw, c.approvalDate),
         announcement: ranking.announcement,
         complexDataSyncedAt: c.syncedAt,
         complexDataStale: !syncedAt || Date.now() - syncedAt.getTime() > STALE_AFTER_MS,

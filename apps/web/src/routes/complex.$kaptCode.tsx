@@ -136,8 +136,9 @@ function ResultPage() {
               )}
             </>
           )}
+          <AfterApproval data={data} />
           <DataFreshness data={data} />
-          <AdSlot slot={import.meta.env.VITE_ADSENSE_SLOT_RESULT} />
+          <AdSlot name="result" />
         </div>
 
         <aside className="flex flex-col gap-8">
@@ -190,7 +191,7 @@ function ResultPage() {
             </ul>
             <ShareButton title={`${c.name} 시공사 확인 · 순살시공`} />
           </section>
-          <AdSlot slot={import.meta.env.VITE_ADSENSE_SLOT_RESULT} />
+          <AdSlot name="result" />
         </aside>
       </div>
     </article>
@@ -290,6 +291,49 @@ function MatchBlock({
         </Callout>
       );
   }
+}
+
+/** 사용승인 후 2년(마감 하자 담보책임기간)에 걸친 반기 발표에서 이 시공사가 명단에 있었는지 */
+function AfterApproval({ data }: { data: Result }) {
+  const approval = data.complex.approvalDate;
+  // 시공사를 모르거나 매칭이 애매하면 위 안내로 충분하다
+  if (!approval || (data.match.status !== "listed" && data.match.status !== "not_listed"))
+    return null;
+  const list = data.afterApproval;
+  return (
+    <section aria-labelledby="after-approval" className="border border-rule p-4">
+      <h2 id="after-approval" className="font-semibold">
+        입주 후 2년 동안 이 시공사 순위
+      </h2>
+      {list.length ? (
+        <ul className="tnum mt-2 flex flex-col gap-1 text-sm">
+          {list.map((a) => (
+            <li key={a.periodStart} className="flex justify-between gap-4">
+              <span className="text-ink-2">
+                {month(a.periodStart)}~{month(a.periodEnd)} 판정
+              </span>
+              <span className={a.match.status === "listed" ? "font-semibold text-accent" : ""}>
+                {a.match.status === "listed"
+                  ? `${a.match.company.rank}위 · ${num(a.match.company.companyDefectCount)}건`
+                  : a.match.status === "not_listed"
+                    ? "명단 밖"
+                    : "매칭 확인 필요"}
+              </span>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="mt-2 text-sm text-ink-2">
+          사용승인({dot(approval)}) 후 2년 동안의 발표 자료가 없습니다. 공개된 반기 명단은 2023년
+          3월 판정분부터입니다.
+        </p>
+      )}
+      <p className="mt-2 text-xs text-ink-3">
+        하자 분쟁은 마감 하자 담보책임기간인 입주 후 2년에 몰립니다. 회사 전체 판정 건수이며, 이
+        단지가 판정을 받았다는 뜻은 아닙니다.
+      </p>
+    </section>
+  );
 }
 
 /** 수집한 지 오래된 단지 안내. 아직 수집 전인 단지는 MatchBlock이 안내한다. */

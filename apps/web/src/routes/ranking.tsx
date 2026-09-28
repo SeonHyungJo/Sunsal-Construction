@@ -38,7 +38,7 @@ function Ranking() {
       <ButtonLink to="/search" variant="accent" className="mt-8">
         우리 아파트 시공사 확인하기
       </ButtonLink>
-      <AdSlot slot={import.meta.env.VITE_ADSENSE_SLOT_LANDING} />
+      <AdSlot name="landing" />
     </article>
   );
 }

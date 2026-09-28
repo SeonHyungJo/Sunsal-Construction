@@ -95,7 +95,7 @@ function BuilderPage() {
                   </li>
                   {i + 1 === AD_AFTER && data.complexes.length > AD_AFTER && (
                     <li className="list-none">
-                      <AdSlot slot={import.meta.env.VITE_ADSENSE_SLOT_BUILDER} />
+                      <AdSlot name="builder" />
                     </li>
                   )}
                 </Fragment>
@@ -131,7 +131,7 @@ function BuilderPage() {
             단지 정보: 국토교통부 공동주택 기본정보(K-apt)의 시공사 표기 기준입니다. 표기가 다르면
             (예: 옛 회사명) 빠질 수 있습니다.
           </p>
-          <AdSlot slot={import.meta.env.VITE_ADSENSE_SLOT_BUILDER} />
+          <AdSlot name="builder" />
         </section>
 
         <aside className="flex flex-col gap-4 md:sticky md:top-6 md:self-start">

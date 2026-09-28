@@ -108,6 +108,10 @@ export const contract = {
           cumulative: z
             .object({ periodStart: z.string(), periodEnd: z.string(), match: builderMatch })
             .nullable(),
+          // 사용승인 후 2년(마감 하자 담보책임기간)과 겹치는 반기 발표별 명단 결과 (오래된 순)
+          afterApproval: z.array(
+            z.object({ periodStart: z.string(), periodEnd: z.string(), match: builderMatch }),
+          ),
         }),
       ),
   },

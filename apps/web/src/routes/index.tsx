@@ -43,7 +43,7 @@ function Landing() {
           국토교통부 공개 자료의 회사 전체 하자 판정 건수(세부 하자수) 기준입니다. 개별 단지의 하자
           여부를 뜻하지 않습니다. <TextLink to="/methodology">기준 자세히</TextLink>
         </p>
-        <AdSlot slot={import.meta.env.VITE_ADSENSE_SLOT_LANDING} />
+        <AdSlot name="landing" />
       </section>
     </div>
   );

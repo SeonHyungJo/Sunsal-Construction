@@ -1,7 +1,7 @@
 import { sampleComplexes, searchText } from "@sunsal/data";
 import { beforeAll, expect, test } from "vitest";
 import { getComplex, hasComplexes, searchComplexes } from "./complexes.ts";
-import { normalizeQuery } from "./router.ts";
+import { afterApproval, normalizeQuery } from "./router.ts";
 import { createSearch } from "./search.ts";
 import { testD1 } from "./test-d1.ts";
 
@@ -66,4 +66,19 @@ test('검색어의 "아파트"는 빼고, 순위도 단지명에서 뺀 이름�
   const c = (kaptCode: string, name: string) => ({ ...sampleComplexes.items[0]!, kaptCode, name });
   const search = createSearch([c("B", "형제타운"), c("A", "형제아파트")]);
   expect(search(normalizeQuery("형제아파트")).map((x) => x.kaptCode)).toEqual(["A", "B"]);
+});
+
+test("afterApproval: 사용승인 후 2년과 겹치는 반기 발표만, 오래된 순", () => {
+  const r = afterApproval("지에스건설(주)", "2021-06-01"); // ~2023-06-01 → '23.3~8월 판정분만
+  expect(r.map((a) => a.periodStart)).toEqual(["2023-03-01"]);
+  expect(r[0]!.match).toMatchObject({ status: "listed", company: { rank: 1 } });
+  expect(afterApproval("지에스건설(주)", "2024-01-01").map((a) => a.periodStart)).toEqual([
+    "2023-09-01",
+    "2024-03-01",
+    "2024-09-01",
+    "2025-03-01",
+    "2025-09-01",
+  ]);
+  expect(afterApproval("지에스건설(주)", "2019-01-01")).toEqual([]); // 발표 자료 이전
+  expect(afterApproval("지에스건설(주)", null)).toEqual([]);
 });
