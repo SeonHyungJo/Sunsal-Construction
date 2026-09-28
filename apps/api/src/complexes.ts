@@ -31,6 +31,15 @@ export async function hasComplexes(db: D1Database) {
   return (await db.prepare("SELECT 1 FROM complexes LIMIT 1").first()) !== null;
 }
 
+/** 기본정보(주소) 수집 진행률. 일간 리포트용 */
+export async function syncProgress(db: D1Database) {
+  return db
+    .prepare(
+      "SELECT count(*) AS total, count(synced_at) AS synced, count(error) AS errored FROM complexes",
+    )
+    .first<{ total: number; synced: number; errored: number }>();
+}
+
 export async function getComplex(db: D1Database, kaptCode: string) {
   const r = await db
     .prepare(`SELECT ${COLUMNS} FROM complexes c WHERE c.kapt_code = ?`)

@@ -62,14 +62,21 @@ test("parseGa4 / parseAdsense", () => {
 });
 
 test("buildReport: 양쪽 성공", () => {
-  expect(buildReport("2026-09-25", { ok: true, data: ga }, { ok: true, data: ads }))
-    .toMatchInlineSnapshot(`
+  expect(
+    buildReport(
+      "2026-09-25",
+      { ok: true, data: ga },
+      { ok: true, data: ads },
+      { total: 22317, synced: 8944, errored: 19 },
+    ),
+  ).toMatchInlineSnapshot(`
     "순살시공 · 9/25 일간 리포트
     방문자 1,234명 · 세션 1,500회
     주소 검색 시작 400회 → 단지 선택 0회 → 결과 열람 150회
     SNS 유입 150회 (상위 캠페인: ig_top5_0925)
     AdSense 추정 수익 3,210.50원 · 광고 페이지뷰 2,000회
     노출 5,100 · 클릭 12 · 페이지 RPM 1,605
+    단지 주소 수집 8,944 / 22,317 (40%) · 오류 19건
     데이터 기준: GA4 / AdSense, 2026-09-25 전일 집계 (수익은 확정 지급액이 아닌 추정치)"
   `);
 });

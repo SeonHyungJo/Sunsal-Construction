@@ -1,3 +1,4 @@
+import { syncProgress } from "./complexes.ts";
 import {
   type AdsenseDaily,
   fetchAdsenseDaily,
@@ -18,7 +19,12 @@ const num = (n: number) => n.toLocaleString("ko-KR");
 const reason = (e: string) => (e === "미설정" ? "미설정" : "수집 실패");
 
 /** GA4와 AdSense는 집계 기준이 달라 합산하지 않는다. 실패한 쪽은 0 대신 실패로 적는다. */
-export function buildReport(date: string, ga: Result<Ga4Daily>, ads: Result<AdsenseDaily>) {
+export function buildReport(
+  date: string,
+  ga: Result<Ga4Daily>,
+  ads: Result<AdsenseDaily>,
+  sync?: Awaited<ReturnType<typeof syncProgress>>,
+) {
   const [, m, d] = date.split("-").map(Number);
   const lines = [`순살시공 · ${m}/${d} 일간 리포트`];
 
@@ -47,6 +53,15 @@ export function buildReport(date: string, ga: Result<Ga4Daily>, ads: Result<Adse
     lines.push(`AdSense: ${reason(ads.error)}`);
   }
 
+  if (sync) {
+    const pct = sync.total ? Math.floor((sync.synced / sync.total) * 100) : 0;
+    lines.push(
+      `단지 주소 수집 ${num(sync.synced)} / ${num(sync.total)} (${pct}%) · 오류 ${num(sync.errored)}건`,
+    );
+  } else if (sync === null) {
+    lines.push("단지 주소 수집: 조회 실패");
+  }
+
   lines.push(`데이터 기준: GA4 / AdSense, ${date} 전일 집계 (수익은 확정 지급액이 아닌 추정치)`);
   return lines.join("\n");
 }
@@ -67,7 +82,12 @@ export async function sendDailyReport(env: Env, now = new Date()): Promise<Daily
   if (!ga.ok && ga.error !== "미설정") console.error(`GA4 report failed: ${ga.error}`);
   if (!ads.ok && ads.error !== "미설정") console.error(`AdSense report failed: ${ads.error}`);
 
-  const message = buildReport(date, ga, ads);
+  const sync = await syncProgress(env.DB).catch((e) => {
+    console.error(`sync progress failed: ${e}`);
+    return null;
+  });
+
+  const message = buildReport(date, ga, ads, sync);
   const sent = await sendTelegram(env, message);
   const status = sent.ok ? "sent" : sent.error === "미설정" ? "not_configured" : "failed";
   if (!sent.ok && status === "failed") console.error(`Telegram send failed: ${sent.error}`);
