@@ -12,9 +12,11 @@ const [{ results }]: [{ results: { kapt_code: string; builder_raw: string }[] }]
 );
 const q = (v: string) => `'${v.replaceAll("'", "''")}'`;
 
-console.log("DELETE FROM complex_builders;");
-for (const r of results)
+// 단지마다 지우고 다시 넣는다. 전체 삭제는 실행 중 cron이 넣은 행까지 지운다.
+for (const r of results) {
+  console.log(`DELETE FROM complex_builders WHERE kapt_code = ${q(r.kapt_code)};`);
   for (const n of builderNames(r.builder_raw))
     console.log(
       `INSERT INTO complex_builders (name, kapt_code) VALUES (${q(n)}, ${q(r.kapt_code)});`,
     );
+}
