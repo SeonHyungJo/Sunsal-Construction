@@ -321,9 +321,11 @@ function AfterApproval({ data }: { data: Result }) {
         <RankHistoryList rows={list} />
       ) : (
         <p className="mt-2 text-sm text-ink-2">
-          사용승인({dot(approval)}) 후 2년은 {dot(twoYearsAfter(approval))}까지입니다. 공개된 반기
-          명단은 2023년 3월 판정분부터라 이 기간의 순위는 알 수 없습니다. 아래 반기 발표별 순위는
-          입주 이후의 회사 전체 기록입니다.
+          사용승인({dot(approval)}) 후 2년은 {dot(twoYearsAfter(approval))}까지입니다.{" "}
+          {approval < "2023-03-01"
+            ? "공개된 반기 명단은 2023년 3월 판정분부터라 이 기간의 순위는 알 수 없습니다."
+            : "사용승인 이후 판정분을 담은 발표가 아직 없습니다. 다음 반기 발표부터 채워집니다."}{" "}
+          아래는 이 시공사의 반기 발표별 회사 전체 기록입니다.
         </p>
       )}
       <p className="mt-2 text-xs text-ink-3">
