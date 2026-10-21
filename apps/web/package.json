@@ -2,6 +2,12 @@
   "name": "web",
   "private": true,
   "type": "module",
+  "exports": {
+    "./server": {
+      "types": "./src/server.d.ts",
+      "default": "./src/server.tsx"
+    }
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",

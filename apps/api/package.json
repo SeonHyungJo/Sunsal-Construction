@@ -9,7 +9,8 @@
     "@orpc/server": "catalog:",
     "@sunsal/contract": "workspace:*",
     "@sunsal/data": "workspace:*",
-    "hono": "catalog:"
+    "hono": "catalog:",
+    "web": "workspace:*"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "catalog:",

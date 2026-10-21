@@ -24,6 +24,8 @@ declare module "@tanstack/react-router" {
   }
 }
 
+// 서버가 그린 본문(server.tsx)을 데이터·화면 코드가 준비된 뒤에 한 번에 바꿔 깜빡임을 줄인다.
+await router.load();
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>

@@ -128,6 +128,9 @@ importers:
       hono:
         specifier: 'catalog:'
         version: 4.13.9
+      web:
+        specifier: workspace:*
+        version: link:../web
     devDependencies:
       '@cloudflare/workers-types':
         specifier: 5.20260925.1

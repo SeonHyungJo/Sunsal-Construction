@@ -4,6 +4,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { AdSlot } from "../components/AdSlot";
+import { RankHistory, RankHistoryList } from "../components/RankHistory";
 import { SourceLine } from "../components/SourceLine";
 import {
   Button,
@@ -33,6 +34,14 @@ export const Route = createFileRoute("/complex/$kaptCode")({
           ? `${loaderData.complex.name} 시공사 확인 · 순살시공`
           : "시공사 확인 · 순살시공",
       },
+      ...(loaderData
+        ? [
+            {
+              name: "description",
+              content: `${loaderData.complex.name}(${loaderData.complex.roadAddress ?? loaderData.complex.legalAddress ?? "주소 수집 전"})의 시공사 ${loaderData.complex.builderRaw ?? "정보 없음"}와 국토교통부 공동주택 하자 판정 상위 20개 건설사 명단을 비교한 결과입니다.`,
+            },
+          ]
+        : []),
     ],
   }),
   component: ResultPage,
@@ -137,6 +146,9 @@ function ResultPage() {
             </>
           )}
           <AfterApproval data={data} />
+          {(match.status === "listed" || match.status === "not_listed") && (
+            <RankHistory rows={data.history} subject="이 시공사" />
+          )}
           <DataFreshness data={data} />
           <AdSlot name="result" />
         </div>
@@ -306,26 +318,12 @@ function AfterApproval({ data }: { data: Result }) {
         입주 후 2년 동안 이 시공사 순위
       </h2>
       {list.length ? (
-        <ul className="tnum mt-2 flex flex-col gap-1 text-sm">
-          {list.map((a) => (
-            <li key={a.periodStart} className="flex justify-between gap-4">
-              <span className="text-ink-2">
-                {month(a.periodStart)}~{month(a.periodEnd)} 판정
-              </span>
-              <span className={a.match.status === "listed" ? "font-semibold text-accent" : ""}>
-                {a.match.status === "listed"
-                  ? `${a.match.company.rank}위 · ${num(a.match.company.companyDefectCount)}건`
-                  : a.match.status === "not_listed"
-                    ? "명단 밖"
-                    : "매칭 확인 필요"}
-              </span>
-            </li>
-          ))}
-        </ul>
+        <RankHistoryList rows={list} />
       ) : (
         <p className="mt-2 text-sm text-ink-2">
-          사용승인({dot(approval)}) 후 2년 동안의 발표 자료가 없습니다. 공개된 반기 명단은 2023년
-          3월 판정분부터입니다.
+          사용승인({dot(approval)}) 후 2년은 {dot(twoYearsAfter(approval))}까지입니다. 공개된 반기
+          명단은 2023년 3월 판정분부터라 이 기간의 순위는 알 수 없습니다. 아래 반기 발표별 순위는
+          입주 이후의 회사 전체 기록입니다.
         </p>
       )}
       <p className="mt-2 text-xs text-ink-3">
@@ -335,6 +333,8 @@ function AfterApproval({ data }: { data: Result }) {
     </section>
   );
 }
+
+const twoYearsAfter = (d: string) => `${Number(d.slice(0, 4)) + 2}${d.slice(4)}`;
 
 /** 수집한 지 오래된 단지 안내. 아직 수집 전인 단지는 MatchBlock이 안내한다. */
 function DataFreshness({ data }: { data: Result }) {

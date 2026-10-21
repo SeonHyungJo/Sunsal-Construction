@@ -6,9 +6,11 @@
   "main": "apps/api/src/index.ts",
   "compatibility_date": "2026-09-01",
   "compatibility_flags": ["nodejs_compat"],
+  // 화면 경로는 Worker가 서버 렌더링한다 (빌드 산출물 /assets/*만 바로 정적 응답).
   "assets": {
+    "binding": "ASSETS",
     "not_found_handling": "single-page-application",
-    "run_worker_first": ["/rpc/*", "/robots.txt", "/sitemap.xml"],
+    "run_worker_first": ["/*", "!/assets/*"],
   },
   "d1_databases": [
     {
@@ -34,8 +36,7 @@
       "name": "sunsal",
       "workers_dev": false,
       "routes": [
-        { "pattern": "sunsal.duruit.com", "custom_domain": true },
-        // duruit.com 전체를 순살이 맡는다 (ads.txt 포함, 예전 duruit 회사 홈페이지 Worker 대체).
+        // 대표 도메인은 duruit.com (ads.txt 포함, 예전 duruit 회사 홈페이지 Worker 대체). www는 Worker가 301로 보낸다.
         { "pattern": "duruit.com", "custom_domain": true },
         { "pattern": "www.duruit.com", "custom_domain": true },
       ],

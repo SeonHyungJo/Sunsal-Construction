@@ -2,6 +2,7 @@ import { onError } from "@orpc/server";
 import { RPCHandler } from "@orpc/server/fetch";
 import { ranking } from "@sunsal/data";
 import { Hono } from "hono";
+import { render } from "web/server";
 import { sendDailyReport } from "./report.ts";
 import { router } from "./router.ts";
 import { syncBasis, syncList } from "./sync.ts";
@@ -25,6 +26,14 @@ const rpc = new RPCHandler(router, {
 });
 
 const app = new Hono<{ Bindings: Env }>();
+
+// 대표 도메인은 duruit.com 하나 (canonical·사이트맵과 같게).
+const SITE = "https://duruit.com";
+app.use(async (c, next) => {
+  const url = new URL(c.req.url);
+  if (url.hostname !== "www.duruit.com") return next();
+  return c.redirect(SITE + url.pathname + url.search, 301);
+});
 
 const PUBLIC_PATHS = [
   "/",
@@ -74,6 +83,38 @@ app.use("/rpc/*", async (c, next) => {
   if (matched) return c.newResponse(response.body, response);
   await next();
 });
+
+// 화면 경로는 서버에서 본문까지 그려 보낸다. 파일(ads.txt 등)은 정적 자산 그대로.
+app.get("*", async (c) => {
+  // URL만 넘긴다: 브라우저의 If-None-Match가 붙으면 본문 없는 304가 와서 빈 페이지가 된다.
+  const asset = await c.env.ASSETS.fetch(c.req.url);
+  if (!asset.headers.get("content-type")?.includes("text/html")) return asset;
+  const url = new URL(c.req.url);
+  const page = await render(url.pathname + url.search, (req) => rpcFetch(req, c.env)).catch(
+    (e: unknown) => (console.error("SSR", e instanceof Error ? e.message : e), null),
+  );
+  if (!page) return asset; // 서버 렌더링이 실패해도 빈 화면 대신 기존 SPA로
+  const res = new HTMLRewriter()
+    .on("#root", { element: (e) => void e.setInnerContent(page.html, { html: true }) })
+    .on("title", { element: (e) => void (page.title && e.setInnerContent(page.title)) })
+    .on('meta[name="description"]', {
+      element: (e) => void (page.description && e.setAttribute("content", page.description)),
+    })
+    .on("head", {
+      element: (e) =>
+        void e.append(`<link rel="canonical" href="${url.origin}${url.pathname}">`, { html: true }),
+    })
+    .transform(asset);
+  return new Response(res.body, { status: page.status, headers: res.headers });
+});
+
+async function rpcFetch(req: Request, env: Env) {
+  const { response } = await rpc.handle(req, {
+    prefix: "/rpc",
+    context: { env, ip: "ssr", authorization: undefined, waitUntil: () => {} },
+  });
+  return response ?? new Response(null, { status: 404 });
+}
 
 export default {
   fetch: app.fetch,

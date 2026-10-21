@@ -4,6 +4,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Fragment } from "react";
 import { AdSlot } from "../components/AdSlot";
+import { RankHistory } from "../components/RankHistory";
 import { SourceLine } from "../components/SourceLine";
 import { ButtonLink, Callout, PageHeader, SectionTitle, TextLink } from "../components/ui";
 import { dot, month, num } from "../lib/format";
@@ -31,6 +32,14 @@ export const Route = createFileRoute("/builder/$key")({
           ? `${loaderData.name} 시공 아파트 · 하자 판정 순위 · 순살시공`
           : "건설사 · 순살시공",
       },
+      ...(loaderData
+        ? [
+            {
+              name: "description",
+              content: `${loaderData.name}가 시공한 아파트 ${loaderData.total}곳과 국토교통부 공동주택 하자 판정 순위(최근 6개월·5년 누계·반기별)를 함께 보여드립니다.`,
+            },
+          ]
+        : []),
     ],
   }),
   component: BuilderPage,
@@ -147,6 +156,15 @@ function BuilderPage() {
               company={data.cumulative.company}
             />
           )}
+          <RankHistory
+            subject="이 회사"
+            rows={data.history.map((h) => ({
+              ...h,
+              match: h.company
+                ? { status: "listed", company: h.company }
+                : { status: "not_listed" },
+            }))}
+          />
           {a && <SourceLine announcement={a} location="result" />}
           <TextLink to="/ranking" className="text-sm">
             전체 순위 보기

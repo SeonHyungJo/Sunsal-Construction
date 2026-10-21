@@ -148,6 +148,11 @@ export const router = os.router({
           match: match(c.builderRaw, cumulative),
         },
         afterApproval: afterApproval(c.builderRaw, c.approvalDate),
+        history: past.map((a) => ({
+          periodStart: a.periodStart,
+          periodEnd: a.periodEnd,
+          match: match(c.builderRaw, a.list),
+        })),
         announcement: ranking.announcement,
         complexDataSyncedAt: c.syncedAt,
         complexDataStale: !syncedAt || Date.now() - syncedAt.getTime() > STALE_AFTER_MS,
@@ -198,6 +203,14 @@ export const router = os.router({
           periodEnd: ranking.cumulative.periodEnd,
           company: cr ? toCompany(cr) : null,
         },
+        history: past.map((a) => {
+          const row = a.list.byKey.get(key);
+          return {
+            periodStart: a.periodStart,
+            periodEnd: a.periodEnd,
+            company: row ? toCompany(row) : null,
+          };
+        }),
         total,
         pageSize: BUILDER_PAGE_SIZE,
         complexes: items.map((c) => ({

@@ -24,11 +24,11 @@
 
 ## GTM·GA4 설정 (운영 연결 완료)
 
-| 항목         | 값                                                                                 |
-| ------------ | ---------------------------------------------------------------------------------- |
-| GTM 컨테이너 | `GTM-WKBFBCB3` (sunsal.duruit.com, partner@duruit.com의 duruit 계정) — 버전 2 게시 |
-| GA4 속성     | `556065304` 순살시공, 웹 스트림 측정 ID `G-B5BZ9YBS0F`                             |
-| 빌드 변수    | `apps/web/.env.production`의 `VITE_GTM_ID`                                         |
+| 항목         | 값                                                                          |
+| ------------ | --------------------------------------------------------------------------- |
+| GTM 컨테이너 | `GTM-WKBFBCB3` (duruit.com, partner@duruit.com의 duruit 계정) — 버전 2 게시 |
+| GA4 속성     | `556065304` 순살시공, 웹 스트림 측정 ID `G-B5BZ9YBS0F`                      |
+| 빌드 변수    | `apps/web/.env.production`의 `VITE_GTM_ID`                                  |
 
 - 컨테이너 구성의 기준은 **`docs/gtm/sunsal-container.json`** 이다. 태그·트리거를 바꿀 때는 이 파일을 고친 뒤 GTM 관리 → 컨테이너 가져오기(병합, 충돌 덮어쓰기) → 게시한다.
   - Google 태그(`send_page_view: false` — 앱이 page_view를 직접 보냄), `GA4 - page_view`, `GA4 - 서비스 이벤트`(위 표의 이벤트, 정규식 트리거), 데이터 영역 변수 7개

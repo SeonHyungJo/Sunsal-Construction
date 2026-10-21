@@ -112,6 +112,10 @@ export const contract = {
           afterApproval: z.array(
             z.object({ periodStart: z.string(), periodEnd: z.string(), match: builderMatch }),
           ),
+          // 공개된 반기 발표 전체의 명단 결과 (오래된 순)
+          history: z.array(
+            z.object({ periodStart: z.string(), periodEnd: z.string(), match: builderMatch }),
+          ),
         }),
       ),
   },
@@ -143,6 +147,14 @@ export const contract = {
               company: rankedCompany.nullable(),
             })
             .nullable(),
+          // 공개된 반기 발표별 최근 6개월 명단 결과 (오래된 순, 명단 밖이면 null)
+          history: z.array(
+            z.object({
+              periodStart: z.string(),
+              periodEnd: z.string(),
+              company: rankedCompany.nullable(),
+            }),
+          ),
           total: z.number(), // 시공 단지 수 (수집된 단지 기준)
           pageSize: z.number(),
           complexes: z.array(complexSummary.extend({ joint: z.boolean() })), // 사용승인일 최신순
